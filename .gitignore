@@ -46,7 +46,8 @@
 # 本机 IDE、联调脚本和验收证据不随源码发布。
 .idea/
 .vscode/
-.run/
+/.run/*
+!/.run/HrPlatformApplication.run.xml
 /task_plan.md
 /findings.md
 /progress.md

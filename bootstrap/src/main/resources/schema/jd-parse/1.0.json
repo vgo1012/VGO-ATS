@@ -1,0 +1,39 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://example.org/vgo/schema/jd-parse/1.0.json",
+  "title":"VGO JD facts 1.0",
+  "type":"object",
+  "additionalProperties":false,
+  "required":["title","summary","professional","controlledConditions","fulfillmentConditions","evidence"],
+  "properties":{
+    "title":{"type":["string","null"],"maxLength":160},
+    "summary":{"type":["string","null"],"maxLength":2000},
+    "professional":{"type":"object","additionalProperties":false,"required":["coreSkills","roleExperiences","minimumYears","preferredYears","responsibilities","industryTags","projectTags"],"properties":{
+      "coreSkills":{"type":"array","description":"JD 明示且去重的原子技术、工具、框架、模型类别或方法；职责、流程和指标不得进入。","maxItems":80,"items":{"$ref":"#/$defs/skill"}},
+      "roleExperiences":{"type":"array","description":"JD 明示要求候选人做过的岗位或职能经历。","maxItems":30,"items":{"$ref":"#/$defs/role"}},
+      "minimumYears":{"type":["number","null"],"description":"JD 明示的最低相关经验年限。","minimum":0,"maximum":80},
+      "preferredYears":{"type":["number","null"],"description":"JD 明示的优先经验年限。","minimum":0,"maximum":80},
+      "responsibilities":{"type":"array","description":"去重、拆分后的短小动作+对象原子职责，不得把整段职责作为一个条目。","maxItems":80,"items":{"type":"string","maxLength":500}},
+      "industryTags":{"type":"array","description":"JD 明示的行业标签，不含通用技术名。","maxItems":30,"items":{"type":"string","maxLength":120}},
+      "projectTags":{"type":"array","description":"JD 明示的项目或业务场景标签。","maxItems":50,"items":{"type":"string","maxLength":160}}
+    }},
+    "controlledConditions":{"type":"object","additionalProperties":false,"required":["ageMin","ageMax","sex","educations","credentials","languages"],"properties":{
+      "ageMin":{"type":["integer","null"],"minimum":16,"maximum":100},"ageMax":{"type":["integer","null"],"minimum":16,"maximum":100},
+      "sex":{"type":["string","null"],"enum":[null,"ANY","MALE","FEMALE"]},
+      "educations":{"type":"array","maxItems":20,"items":{"type":"string","maxLength":120}},
+      "credentials":{"type":"array","maxItems":100,"items":{"type":"string","maxLength":200}},
+      "languages":{"type":"array","maxItems":50,"items":{"$ref":"#/$defs/language"}}
+    }},
+    "fulfillmentConditions":{"type":"object","additionalProperties":false,"required":["locations","availability","salaryMin","salaryMax","salaryPeriod"],"properties":{
+      "locations":{"type":"array","maxItems":50,"items":{"type":"string","maxLength":120}},"availability":{"type":["string","null"],"maxLength":200},
+      "salaryMin":{"type":["number","null"],"minimum":0},"salaryMax":{"type":["number","null"],"minimum":0},"salaryPeriod":{"type":["string","null"],"enum":[null,"MONTH","YEAR","DAY","HOUR"]}
+    }},
+    "evidence":{"type":"array","minItems":1,"maxItems":2000,"items":{"$ref":"#/$defs/evidence"}}
+  },
+  "$defs":{
+    "skill":{"type":"object","additionalProperties":false,"required":["id","name","required","aliases"],"properties":{"id":{"type":"string","pattern":"^[A-Za-z0-9_-]{1,64}$"},"name":{"type":"string","description":"单个原子技术或能力名称。","minLength":1,"maxLength":120},"required":{"type":"boolean","description":"主要技能为 true；优先、加分或熟悉项为 false。仅区分能力覆盖与增益，不代表淘汰条件。"},"aliases":{"type":"array","description":"原文明示的别名或缩写。","maxItems":30,"items":{"type":"string","maxLength":120}}}},
+    "role":{"type":"object","additionalProperties":false,"required":["id","role","level"],"properties":{"id":{"type":"string","pattern":"^[A-Za-z0-9_-]{1,64}$"},"role":{"type":"string","minLength":1,"maxLength":160},"level":{"type":["string","null"],"maxLength":80}}},
+    "language":{"type":"object","additionalProperties":false,"required":["id","name","level"],"properties":{"id":{"type":"string","pattern":"^[A-Za-z0-9_-]{1,64}$"},"name":{"type":"string","minLength":1,"maxLength":100},"level":{"type":["string","null"],"maxLength":100}}},
+    "evidence":{"type":"object","additionalProperties":false,"required":["jsonPointer","startOffset","endOffset","quote"],"properties":{"jsonPointer":{"type":"string","pattern":"^/.*$"},"startOffset":{"type":"integer","minimum":0},"endOffset":{"type":"integer","minimum":0},"quote":{"type":"string","minLength":1,"maxLength":1000}}}
+  }
+}

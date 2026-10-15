@@ -1,0 +1,47 @@
+@startuml
+!include ../theme.puml
+title VGO ATS上下文
+left to right direction
+
+actor "HR/招聘专员" as HR
+actor "招聘负责人" as Manager
+actor "业务负责人/面试官" as Interviewer
+actor "系统管理员" as Admin
+actor "甲方" as Client
+
+rectangle "VGO ATS" as System {
+  component "招聘工作台与ATS核心" as Core
+  component "AI解析、匹配与风险辅助" as AI
+  component "人才搜索与流程跟踪" as Search
+}
+
+cloud "Boss/企业邮箱" as Mail
+cloud "外部大模型API" as LLM
+rectangle "飞书/企业微信/企业邮箱\n通知与日历平台" as Notify
+
+HR --> Core : 需求、简历、流程、推荐
+Manager --> Core : 模板、团队、统计
+Interviewer --> Core : 查看授权材料、提交面评
+Admin --> Core : 账号、角色、系统配置
+Mail --> Core : 简历邮件（条件具备后）
+Core --> Client : HR人工发送原始简历
+Client --> Core : HR代录甲方反馈
+AI --> LLM : 受控模型调用
+Core --> Notify : 内部提醒、日历与消息（条件启用）
+
+note bottom of Mail
+数据库多账号 + IMAP/SSL + UID增量；
+首次从当前LASTUID零基线开始；
+外部系统不作为本地业务事实源。
+end note
+
+note bottom of Notify
+外部平台不是业务事实源；
+候选人不可达时回退其他渠道或人工发送。
+end note
+
+note bottom of Admin
+系统管理权限不默认等于
+候选人业务数据权限。
+end note
+@enduml

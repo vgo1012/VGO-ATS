@@ -1,0 +1,12 @@
+# 仅用于本机 Compose，须与 dev Profile 一起启用；数据库和搜索通过容器网络连接。
+server:
+  address: 0.0.0.0
+
+spring:
+  datasource:
+    url: jdbc:mysql://mysql:3306/vgo_hr?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+
+hr:
+  search:
+    elasticsearch:
+      base-url: http://elasticsearch:9200

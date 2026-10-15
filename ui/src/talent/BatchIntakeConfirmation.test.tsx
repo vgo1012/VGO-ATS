@@ -1,0 +1,44 @@
+import { App, ConfigProvider } from 'antd';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { afterEach, expect, it, vi } from 'vitest';
+import { BatchIntakeConfirmation } from './BatchIntakeConfirmation';
+import { talentApi, type ResumeIntake } from './api';
+afterEach(()=>{cleanup();vi.restoreAllMocks();});
+it('requires human identity review and retries only failed rows without AI calls',async()=>{
+  const items=[{id:'a',originalFileName:'a.pdf',version:1},{id:'b',originalFileName:'b.pdf',version:1}] as ResumeIntake[];
+  vi.spyOn(talentApi,'intake').mockImplementation(id=>Promise.resolve({...items.find(item=>item.id===id)!,status:'READY_FOR_CONFIRMATION',version:2}));
+  let failures=0;
+  const confirm=vi.spyOn(talentApi,'confirm').mockImplementation(item=>item.id==='b'&&failures++===0?Promise.reject(new Error('conflict')):Promise.resolve(item));
+  const parse=vi.spyOn(talentApi,'parseResume');
+  render(<ConfigProvider theme={{token:{motion:false}}}><App><BatchIntakeConfirmation items={items} onClose={()=>undefined} onSaved={()=>Promise.resolve()}/></App></ConfigProvider>);
+  expect(screen.getByRole('button',{name:'确认已核对项入库'})).toBeDisabled();
+  fireEvent.change(screen.getByLabelText('批量身份信息'),{target:{value:'测试甲\tqa-a@example.invalid\n测试乙\tqa-b@example.invalid'}});
+  fireEvent.click(screen.getByRole('button',{name:'填入未完成项'}));
+  expect(screen.getByLabelText('a.pdf 姓名')).toHaveValue('测试甲');
+  fireEvent.click(screen.getByRole('checkbox'));
+  await act(async()=>{fireEvent.click(screen.getByRole('button',{name:'确认已核对项入库'}));await Promise.resolve();});
+  await waitFor(()=>expect(screen.getByRole('button',{name:'继续确认未完成项'})).toBeEnabled());
+  expect(confirm).toHaveBeenCalledTimes(2);
+  expect(confirm.mock.calls[0]?.[0].version).toBe(2);
+  expect(confirm.mock.calls[0]?.[1].fullName).toBe('测试甲');
+  await act(async()=>{fireEvent.click(screen.getByRole('button',{name:'继续确认未完成项'}));await Promise.resolve();});
+  await waitFor(()=>expect(screen.getByRole('button',{name:'继续确认未完成项'})).toBeDisabled());
+  expect(confirm.mock.calls.map(call=>call[0].id)).toEqual(['a','b','b']);
+  expect(parse).not.toHaveBeenCalled();
+});
+
+it('recovers a lost response by reading the exact intake and does not confirm twice',async()=>{
+  const item={id:'recover',originalFileName:'recover.pdf',version:1,status:'READY_FOR_CONFIRMATION'} as ResumeIntake;
+  let confirmed=false;
+  const read=vi.spyOn(talentApi,'intake').mockImplementation(()=>Promise.resolve({...item,status:confirmed?'CONFIRMED':'READY_FOR_CONFIRMATION',version:confirmed?2:1}));
+  const confirm=vi.spyOn(talentApi,'confirm').mockImplementation(()=>{confirmed=true;return Promise.reject(new Error('response lost'));});
+  render(<ConfigProvider theme={{token:{motion:false}}}><App><BatchIntakeConfirmation items={[item]} onClose={()=>undefined} onSaved={()=>Promise.resolve()}/></App></ConfigProvider>);
+  fireEvent.change(screen.getByLabelText('recover.pdf 姓名'),{target:{value:'恢复测试'}});
+  fireEvent.click(screen.getByRole('checkbox'));
+  await act(async()=>{fireEvent.click(screen.getByRole('button',{name:'确认已核对项入库'}));await Promise.resolve();});
+  expect(screen.getByText('确认失败，请刷新收件状态后重试')).toBeInTheDocument();
+  await waitFor(()=>expect(screen.getByRole('button',{name:'确认已核对项入库'})).toBeEnabled());
+  await act(async()=>{fireEvent.click(screen.getByRole('button',{name:'确认已核对项入库'}));await Promise.resolve();});
+  await waitFor(()=>expect(screen.getByRole('button',{name:'继续确认未完成项'})).toBeDisabled());
+  expect(read).toHaveBeenCalledTimes(2);expect(read).toHaveBeenLastCalledWith('recover');expect(confirm).toHaveBeenCalledTimes(1);
+});

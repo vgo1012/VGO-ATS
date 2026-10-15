@@ -1,0 +1,74 @@
+.matching-workspace-page .screening-job-model { display: grid; grid-template-columns: subgrid; align-items: end; gap: 8px 16px; padding-block: 10px; }
+.screening-model-summary { display: flex; align-items: center; flex-wrap: wrap; gap: 10px 16px; min-width: 0; }
+.matching-workspace-page .screening-job-weights { gap: 8px 12px; }
+.screening-model-controls { display: flex; justify-content: flex-end; align-items: center; flex-wrap: wrap; gap: 8px; min-width: 0; }
+.screening-profile-select { width: 180px; max-width: 100%; }
+.screening-model-controls > span { max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); font-size: 12px; }
+.screening-model-controls .ant-btn { height: 32px; min-height: 32px; }
+.matching-workspace-page .matching-result-ledger { border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+.matching-workspace-page .matching-result-ledger .candidate-bulk-actions { margin: 0; gap: 8px; }
+.matching-workspace-page .matching-result-ledger .candidate-bulk-actions .ant-btn { height: 32px; min-height: 32px; padding-inline: 12px; font-size: 13px; }
+.matching-workspace-page .matching-result-ledger .ant-table-thead > tr > th { height: 44px; font-size: var(--type-label); padding: 10px 12px; }
+.matching-workspace-page .matching-result-ledger .ant-table-tbody > tr > td { height: 72px; padding: 6px 12px; vertical-align: middle; font-size: 13px; }
+.matching-workspace-page .matching-score-table .matching-person b { font-size: 14px; }
+.matching-workspace-page .matching-score-table .matching-total b { font-size: 20px; }
+.matching-workspace-page .matching-score-table .matching-summary { line-height: 1.65; }
+.matching-workspace-page .matching-score-table .ant-btn-sm { height: 28px; min-height: 28px; font-size: 12px; }
+.matching-row-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; padding-block: 6px; }
+.matching-row-actions > .ant-btn { width: 100%; white-space: nowrap; }
+.matching-workspace-page .matching-personal-results { min-width: 0; }
+.screening-overview { margin-bottom: 0; }
+.screening-overview .screening-metric { cursor: pointer; text-align: left; font: inherit; }
+.screening-overview .screening-metric:hover { background: color-mix(in srgb, var(--metric-accent) 4%, var(--surface)); }
+.screening-overview .screening-metric[aria-pressed="true"] { background: var(--brand-100); }
+.screening-overview .screening-metric[aria-pressed="true"] .screening-metric-content > span:not(.anticon) { color: var(--ink); }
+.screening-overview .screening-metric:focus-visible { outline: 2px solid var(--operator); outline-offset: 3px; }
+.screening-result-toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; padding: 12px 16px; }
+.screening-result-filter { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; margin-left: auto; min-width: 0; }
+.screening-result-filter .ant-input-affix-wrapper { width: 300px; max-width: 100%; }
+.screening-result-filter > .ant-btn { flex: 0 0 auto; }
+@media (max-width: 1100px) {
+  .matching-workspace-page .screening-job-model { grid-template-columns: minmax(0, 1fr); }
+  .screening-model-controls { flex-wrap: wrap; }
+}
+@media (max-width: 600px) {
+  .screening-model-controls { justify-content: flex-start; }
+  .screening-model-controls > span { max-width: 100%; }
+  .screening-result-toolbar { padding: 12px; }
+  .screening-result-filter { width: 100%; margin-left: 0; }
+  .screening-metric { height: 80px; padding: 13px 16px; gap: 10px; }
+  .screening-metric-content { gap: 10px; }
+  .screening-metric-content strong { font-size: 25px; }
+}
+
+@media (max-width: 767px), (pointer: coarse) {
+  .screening-model-controls .ant-btn,
+  .matching-workspace-page .matching-score-table .ant-btn-sm,
+  .matching-workspace-page .matching-result-ledger .candidate-bulk-actions .ant-btn { min-height: 44px; }
+}
+
+@media (max-width: 1500px) {
+  .matching-workspace-page .screening-job-model { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* 固定方案控件占位，切换仅改变字段内容，不改变工具栏宽度。 */
+.screening-profile-select { flex: 0 0 180px; }
+.screening-job-weights b { display: inline-block; min-width: 3.5em; font-variant-numeric: tabular-nums; }
+.screening-results-loading { min-height: 440px; padding: 24px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+.matching-workspace-page { scrollbar-gutter: stable; }
+
+.screening-basis-results { display: flex; flex-direction: column; flex: 1; gap: 8px; min-width: 0; }
+.screening-basis-results > * { flex-shrink: 0; }
+.screening-basis-results > .matching-result-ledger { flex: 1; border-bottom: 0; border-radius: 10px 10px 0 0; }
+.screening-basis-results > .matching-result-ledger + .compact-pagination { margin-top: -8px; border: 1px solid var(--line); border-radius: 0 0 10px 10px; }
+
+/* 桌面列宽按可用空间分配，说明完整换行，不靠裁剪隐藏横向溢出。 */
+.matching-workspace-page .matching-score-table .matching-summary { display: block; overflow: visible; -webkit-line-clamp: unset; }
+.matching-workspace-page .matching-score-table .matching-person small { max-width: 100%; white-space: normal; overflow: visible; }
+@media (min-width: 1200px) {
+  .matching-workspace-page .matching-result-ledger .matching-score-table .ant-table-cell { padding-inline: 8px; overflow-wrap: anywhere; }
+  .matching-workspace-page .matching-result-ledger .matching-score-table .ant-table-cell.matching-dimension-cell { padding-inline: 4px; }
+  .matching-workspace-page .matching-score-table .matching-score-blocks > span { width: min(100%, 62px); grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .matching-workspace-page .matching-score-table .matching-score-blocks i { width: 100%; }
+  .matching-workspace-page .matching-score-table .ant-tag.ant-tag-filled { margin-inline-end: 0; padding-inline: 6px; white-space: normal; }
+}

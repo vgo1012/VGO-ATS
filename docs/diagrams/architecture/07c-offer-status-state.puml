@@ -1,0 +1,39 @@
+@startuml
+!include ../theme.puml
+title Offer日常两态与历史兼容状态机
+
+[*] --> NOT_STARTED
+state "未开始" as NOT_STARTED
+state "处理中\n（谈薪/审批）" as IN_PROGRESS
+state "已发出" as ISSUED
+state "历史已接受\n（只读兼容）" as ACCEPTED
+state "已终止" as TERMINATED
+state "已入职" as ONBOARDED
+
+NOT_STARTED --> IN_PROGRESS : 可选：开始处理
+NOT_STARTED --> ISSUED : 默认：记录已发出
+IN_PROGRESS --> ISSUED : Offer发出
+ISSUED --> ONBOARDED : 独立真实入职事件
+ACCEPTED --> ONBOARDED : 历史记录的真实入职事件
+TERMINATED --> IN_PROGRESS : 重新开启（原因必填）
+
+NOT_STARTED --> TERMINATED
+IN_PROGRESS --> TERMINATED
+ISSUED --> TERMINATED
+ACCEPTED --> TERMINATED : 历史当前记录按事实终止
+
+TERMINATED --> [*]
+ONBOARDED --> [*]
+
+note right of TERMINATED
+原因必填：候选人拒绝、公司撤回、失效、其他；
+“其他”还需填写说明。
+end note
+
+note bottom
+外部人事系统原始状态、来源和发生时间完整保留；
+日常状态仅为处理中、已发出；谈薪/审批均归处理中。
+ACCEPTED 仅兼容历史只读，不得新增或更正为该状态；
+错录通过追加更正修复，真实恢复指向终止记录，均不覆盖历史。
+end note
+@enduml

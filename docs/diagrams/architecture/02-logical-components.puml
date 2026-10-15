@@ -1,0 +1,77 @@
+@startuml
+!include ../theme.puml
+title 逻辑组件架构
+left to right direction
+
+package "接入层" {
+  component "React 19 + TypeScript\nVite SPA / Ant Design" as Web
+  component "React Router Data Mode\nTanStack Query / API Client / SSE" as WebData
+  component "WAF / Nginx / API入口" as Gateway
+}
+
+package "hr-platform：单进程模块化单体" {
+  component "身份、团队与权限" as IAM
+  component "招聘需求与JD" as Demand
+  component "候选人、简历与导入复核" as Talent
+  component "应聘流程与面试" as Workflow
+  component "甲方推荐与限制" as Submission
+  component "评分、筛选模板与匹配" as Matching
+  component "关键词/结构化/语义搜索" as SearchApp
+  component "通知、日历与邮箱适配" as Integration
+  component "统一指标、报表与审计" as Audit
+  component "文件安全与文本提取" as Extract
+  component "OCR与视觉兜底" as OCR
+  component "AI事实解析\nJava确定性评分" as AIWorker
+  component "索引增量与重建" as Indexer
+  component "初始化、批处理与重算" as Batch
+  component "通知与日历同步" as Sync
+}
+
+database "MySQL 8\n业务事实源" as MySQL
+database "Elasticsearch\n全文+向量派生索引" as ES
+folder "ObjectStoragePort\nMinIO / OSS" as Storage
+queue "RabbitMQ" as MQ
+cloud "外部模型\nSpring AI适配" as Model
+
+Web --> WebData : 路由、查询与长任务
+WebData --> Gateway : 同源 /api 与 /events
+Gateway --> IAM
+Gateway --> Demand
+Gateway --> Talent
+Gateway --> Workflow
+Gateway --> Submission
+Gateway --> SearchApp
+
+IAM --> MySQL
+Demand --> MySQL
+Talent --> MySQL
+Workflow --> MySQL
+Submission --> MySQL
+Matching --> MySQL
+Audit --> MySQL
+Talent --> Storage
+SearchApp --> ES
+
+MySQL --> MQ : Transactional Outbox
+MQ --> Extract
+MQ --> AIWorker
+MQ --> Indexer
+MQ --> Sync
+Extract --> OCR : 低质量/扫描页
+Extract --> Storage
+AIWorker --> Model
+AIWorker --> MySQL
+Indexer --> ES
+Batch --> MySQL
+Batch --> ES
+Sync --> Integration
+
+note bottom of ES
+索引可重建，不作为候选人事实源。
+end note
+
+note bottom of Web
+前端权限仅改善交互；
+后端始终执行最终鉴权与字段裁剪。
+end note
+@enduml

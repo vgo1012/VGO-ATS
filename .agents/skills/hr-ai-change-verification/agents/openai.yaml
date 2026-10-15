@@ -1,0 +1,4 @@
+interface:
+  display_name: "HR AI Change Verification"
+  short_description: "Run risk-based backend verification with evidence"
+  default_prompt: "Use $hr-ai-change-verification to verify this backend change and report fresh evidence."

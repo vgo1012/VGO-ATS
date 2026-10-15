@@ -1,0 +1,156 @@
+/* Settings stay inside the application frame; long content scrolls locally. */
+.app-main:has(.settings-layout) { height: calc(100dvh - 76px); min-height: 0; padding-bottom: 24px; }
+.app-main .settings-layout { height: 100%; min-height: 0; }
+.app-main .settings-sidebar { position: static; max-height: 100%; overflow-y: auto; scrollbar-gutter: stable; }
+.app-main .settings-content { height: 100%; min-height: 0; overflow: auto; overscroll-behavior: contain; scrollbar-gutter: stable; }
+.settings-content > .workspace-page { align-content: start; }
+
+/* Single-list settings reserve space for controls and let only table data scroll. */
+.settings-content > .settings-list-page { display: flex; flex-direction: column; height: 100%; }
+.settings-list-page > * { flex-shrink: 0; }
+.settings-list-page > .ant-tabs { flex: 1; min-height: 240px; }
+.settings-list-page > .ant-tabs .ant-tabs-body-holder,
+.settings-list-page > .ant-tabs .ant-tabs-body,
+.settings-list-page > .ant-tabs .ant-tabs-content-active { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+.app-main .settings-content .settings-list-page .ant-card:has(> .ant-card-body > .ant-table-wrapper) { display: flex; flex-direction: column; flex: 1; min-height: 240px; }
+.settings-list-page .ant-card:has(> .ant-card-body > .ant-table-wrapper) > .ant-card-body { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+.settings-list-page .ant-card-body > :not(.ant-table-wrapper) { flex-shrink: 0; }
+.settings-list-page .ant-table-wrapper,
+.settings-list-page .ant-table-wrapper > .ant-spin,
+.settings-list-page .ant-spin-container,
+.settings-list-page .ant-table,
+.settings-list-page .ant-table-container { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+.app-main .settings-list-page .ant-table-content { flex: 1; min-height: 0; max-height: none; }
+.settings-list-page .ant-pagination { flex-shrink: 0; }
+.settings-list-page .data-page-controls { padding: 14px 0 0; }
+
+.jd-library-page > .ledger-heading { margin-bottom: 0; }
+.jd-library-page > .ledger-heading .ant-typography:not(h1) { max-width: none; margin-top: 4px; }
+.jd-library-page > .source-jd-table { min-height: 120px; }
+
+.mail-resume-validation-page > .ledger-heading { margin-bottom: 0; }
+.mail-resume-filter-card > .ant-card-body { padding: 14px 16px; }
+.mail-resume-filters {
+  display: grid;
+  grid-template-columns: minmax(190px, 1fr) minmax(160px, .72fr) minmax(210px, 1fr) minmax(300px, 1.25fr) auto;
+  align-items: center;
+  gap: 12px;
+}
+.mail-resume-filters .ant-form-item { min-width: 0; margin: 0; }
+.mail-resume-filters .ant-form-item-row { flex-flow: row nowrap; align-items: center; }
+.mail-resume-filters .ant-form-item-label { flex: 0 0 auto; padding: 0 8px 0 0; white-space: nowrap; }
+.mail-resume-filters .ant-form-item-label > label { height: auto; }
+.mail-resume-filters .ant-form-item-control { min-width: 0; }
+.mail-resume-filters :is(.ant-input, .ant-picker) { width: 100%; min-width: 0; }
+.mail-resume-filters .ant-form-item:last-child { justify-self: end; }
+.mail-resume-results-card > .ant-card-body { padding: 0; }
+.mail-resume-results-card .data-page-controls { padding: 14px 16px; }
+/* 聚焦滚动避开固定表头和右侧操作列。 */
+.mail-resume-results-card .ant-table-content { scroll-padding-block-start: 48px; scroll-padding-inline-end: 120px; }
+.mail-resume-cell { display: flex; flex-direction: column; gap: 4px; width: 100%; min-width: 0; white-space: normal; overflow-wrap: anywhere; }
+.mail-resume-cell > * { min-width: 0; max-width: 100%; }
+.mail-resume-cell .ant-tag { align-self: flex-start; margin-inline-end: 0; white-space: normal; overflow-wrap: anywhere; }
+.mail-resume-cell .ant-tag:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.mail-resume-results-card .ant-table-tbody > tr > td { vertical-align: top; }
+
+.intake-validation-page .ledger-heading { align-items: center; }
+.intake-validation-page .ledger-heading h1 { white-space: nowrap; }
+.intake-validation-page .ant-table-wrapper { isolation: isolate; }
+.intake-validation-page .ant-tag.ant-tag-gold.ant-tag-filled { color: var(--ink); }
+.workspace-dialog.intake-original-dialog .ant-modal-body > div:empty { display: none; }
+.workspace-dialog.intake-original-dialog .interview-material-pane { height: auto; min-height: 0; }
+.intake-drawer .ant-tag.ant-tag-green.ant-tag-filled { color: #237804; }
+.intake-drawer .ant-table-expanded-row-fixed { color: var(--muted); }
+.intake-batch-card > .ant-card-body { padding: 20px 24px; }
+.intake-batch-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); align-content: start; gap: 16px; min-height: 0; margin-top: 18px; overflow-y: auto; padding: 2px 4px 12px 2px; }
+.intake-batch-list > div { min-width: 0; }
+.intake-batch-list > .ant-typography { grid-column: 1 / -1; }
+.intake-batch-item { display: flex; flex-direction: column; gap: 8px; width: 100%; min-height: 164px; padding: 16px 18px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); text-align: left; cursor: pointer; }
+.intake-batch-item:hover, .intake-batch-item[aria-pressed="true"] { border-color: var(--brand-700); background: var(--canvas); }
+.intake-batch-item:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.intake-batch-item span { color: var(--muted); font-size: var(--type-label); }
+.intake-batch-item .intake-batch-link { margin-top: auto; color: var(--brand-700); }
+.intake-batch-pagination { display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-top: 12px; }
+.intake-detail-heading { display: flex; align-items: center; gap: 16px; flex-shrink: 0; }
+.intake-detail-heading h4 { margin: 0; }
+.intake-filter-card > .ant-card-body { padding: 16px; }
+.intake-validation-page .intake-filters { display: grid; grid-template-columns: minmax(160px, 1.2fr) minmax(130px, .8fr) 100px minmax(180px, 1.1fr) minmax(270px, 1.5fr) auto; align-items: end; gap: 10px; }
+.intake-filters .ant-form-item { min-width: 0; margin: 0; }
+.intake-filters .ant-form-item:last-child { justify-self: end; }
+.intake-filters .ant-form-item-row { flex-direction: column; }
+.intake-filters .ant-form-item-label { text-align: left; padding-bottom: 4px; }
+.intake-filters .ant-form-item-label > label { height: auto; }
+.intake-filters .ant-form-item-control { min-width: 0; }
+.intake-filters .ant-select, .intake-filters .ant-picker { width: 100%; min-width: 0; }
+
+@media (max-width: 767px), (pointer: coarse) {
+  .intake-filters :is(.ant-input-affix-wrapper, .ant-select, .ant-picker) { min-height: 44px; }
+  .intake-validation-page .intake-filters .ant-btn { min-height: 44px; }
+  .intake-filters .ant-input-affix-wrapper { padding-inline-end: 44px; }
+  .intake-filters .ant-input-suffix { position: absolute; inset-block: -1px; inset-inline-end: 0; }
+  .intake-filters .ant-input-clear-icon { display: grid; place-items: center; width: 44px; height: 100%; }
+  .intake-filters :is(.ant-select-clear, .ant-picker-clear) { top: 0; right: 0; bottom: auto; display: grid; place-items: center; width: 44px; height: 44px; margin-top: 0; transform: none; }
+  .intake-filters .ant-select-clear { opacity: 1; }
+  .intake-filters .ant-picker .ant-picker-clear { opacity: 1; }
+}
+
+.intake-drawer .ant-drawer-body { overflow: hidden; }
+.intake-drawer .intake-validation-page { display: flex; flex-direction: column; height: 100%; min-height: 0; gap: 16px; }
+.intake-drawer .intake-batch-card { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+.intake-drawer .intake-batch-card > .ant-card-body { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+.intake-drawer .intake-batch-card .intake-batch-list { flex: 1 1 0; }
+.intake-drawer .intake-validation-page .ant-table-wrapper { overflow: hidden; }
+.intake-drawer .paged-panel { flex: 1; min-height: 0; }
+.intake-drawer .intake-validation-page .ant-table-content { flex: 1; min-height: 0; max-height: none; overflow: auto; }
+
+@media (min-width: 901px) and (max-width: 1200px) {
+  .intake-validation-page .intake-filters { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (max-width: 1500px) {
+  .mail-resume-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .mail-resume-filters .ant-form-item:last-child { grid-column: 1 / -1; }
+}
+
+@media (max-width: 900px) {
+  .app-main:has(.settings-layout) { height: calc(100dvh - 132px); padding-block: 16px; }
+  .app-main .settings-layout { grid-template-rows: auto minmax(0, 1fr); gap: 12px; }
+  .intake-drawer .ant-drawer-body { overflow-y: auto; }
+  .intake-drawer .intake-validation-page { height: auto; min-height: 100%; }
+  .intake-drawer .paged-panel { flex: none; }
+  .intake-validation-page .data-page-controls { position: static; }
+  .intake-validation-page .intake-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .intake-validation-page .ledger-heading { flex-direction: row; gap: 12px; }
+  .intake-detail-heading { align-items: flex-start; flex-direction: column; gap: 8px; }
+  .intake-filters .ant-form-item:last-child { grid-column: 1 / -1; justify-self: end; }
+}
+
+@media (max-width: 600px) {
+  .settings-content > .identity-admin-page { height: auto; min-height: 100%; }
+  .identity-admin-page > .ant-tabs,
+  .app-main .settings-content .identity-admin-page .ant-card:has(> .ant-card-body > .ant-table-wrapper) { flex: none; }
+  .identity-admin-page .ant-table-wrapper,
+  .identity-admin-page .ant-table-wrapper > .ant-spin,
+  .identity-admin-page .ant-spin-container,
+  .identity-admin-page .ant-table,
+  .identity-admin-page .ant-table-container,
+  .app-main .identity-admin-page .ant-table-content { flex: none; }
+  .jd-library-page .data-page-controls { position: static; }
+  .intake-validation-page .intake-filters, .intake-drawer .intake-filters { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .intake-filters .ant-form-item-row { flex-flow: row nowrap; align-items: center; }
+  .intake-filters .ant-form-item-label { flex: 0 0 70px; padding: 0; }
+  .intake-filters .ant-form-item-control { flex: 1; }
+  .mail-resume-filters { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+  /* 覆盖 Ant Design 小屏的整行标签规则，保留筛选控件的行内布局。 */
+  .mail-resume-filters .ant-form-item-label { flex: 0 0 70px !important; padding: 0; }
+  .mail-resume-filters .ant-form-item-control { flex: 1 !important; }
+  .mail-resume-filters .ant-form-item:last-child { grid-column: auto; justify-self: stretch; }
+  .mail-resume-filters .ant-space-compact { width: 100%; }
+  .mail-resume-filters .ant-space-compact > .ant-btn { flex: 1; }
+  .settings-content > .mail-resume-validation-page { height: auto; min-height: 100%; }
+  .app-main .mail-resume-validation-page .ant-table-content { flex: none; height: 320px; max-height: 320px; }
+}
+
+.intake-file { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+.intake-file-name { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; overflow-wrap: anywhere; width: 100%; }
+.intake-file-time { font-size: 12px; }

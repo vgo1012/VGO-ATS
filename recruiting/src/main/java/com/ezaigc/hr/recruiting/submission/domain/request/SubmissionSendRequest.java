@@ -1,0 +1,20 @@
+package com.ezaigc.hr.recruiting.submission.domain.request;
+
+import com.ezaigc.hr.common.web.version.ValidResourceVersion;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class SubmissionSendRequest {
+  private @NotBlank @Size(max = 500) String recipient;
+  private @NotBlank @Size(max = 40) String channel;
+  private @NotBlank @Size(max = 500) String reason;
+  /** 技术乐观锁版本号。 */
+  private @ValidResourceVersion String version;
+
+}

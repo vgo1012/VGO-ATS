@@ -1,0 +1,35 @@
+@startuml
+!include ../theme.puml
+title 候选人混合检索与预计算匹配时序
+
+actor HR
+participant "hr-api / SearchApplication" as API
+participant "权限服务" as Auth
+database "Elasticsearch" as ES
+database "MySQL" as DB
+participant "匹配Worker" as Worker
+
+HR -> API : 关键词、结构化条件或JD搜索
+API -> Auth : 解析角色、团队和对象授权
+Auth --> API : access_principals + action permissions
+API -> ES : 结构化过滤 + BM25 + kNN召回
+ES --> API : Top 500候选及相关证据
+API -> API : RRF/应用层融合与确定性规则重排
+API -> DB : 批量读取公司黑名单、当前甲方限制和评分快照
+DB --> API : 限制与预计算结果
+API --> HR : 100~300ms返回排序、证据和风险
+
+alt 缺少 evaluator 结果或输入版本变化
+  API -> DB : 创建异步确定性评分任务
+  DB -> Worker : Outbox/RabbitMQ触发
+  Worker -> DB : 读取JD/简历事实快照与evaluator版本
+  Worker -> Worker : Java确定性evaluator计算Top N
+  Worker -> DB : 保存新match_evaluation快照
+end
+
+note right of API
+在线查询不等待批量评分；
+模型只在JD/简历解析链路生成事实与证据，
+此链路不发起JD—简历二次模型调用。
+end note
+@enduml

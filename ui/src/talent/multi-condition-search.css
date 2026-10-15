@@ -1,0 +1,14 @@
+.multi-condition-search { flex: 1 1 360px; min-width: 0; max-width: 560px; margin-left: auto; }
+.multi-condition-bar { display: flex; align-items: flex-start; gap: 6px; }
+.multi-condition-field { display: flex; flex: 1; flex-wrap: wrap; align-items: center; gap: 4px; min-width: 0; min-height: 40px; max-height: 88px; overflow-y: auto; padding: 4px 6px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+.multi-condition-field:focus-within { border-color: var(--brand-700); outline: 2px solid var(--brand-700); outline-offset: 1px; }
+.multi-condition-field > .ant-input { flex: 1 0 130px; width: 130px; min-width: 0; padding: 2px 4px; }
+/* 整组搜索框保留焦点高亮，内部输入不重复绘制全局焦点描边。 */
+.multi-condition-field > .ant-input:focus-visible { outline: none; }
+.search-condition-tag { display: inline-flex; align-items: center; gap: 4px; max-width: 100%; padding: 2px 6px; border-radius: 4px; background: var(--brand-100); color: var(--brand-700); font-size: 12px; }
+.search-condition-tag > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.search-condition-tag > button { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 24px; height: 24px; padding: 0; border: 0; background: transparent; color: inherit; cursor: pointer; }
+.search-condition-tag > button:focus-visible { outline: 2px solid var(--brand-700); outline-offset: 1px; }
+.multi-condition-hint { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 28px; color: var(--muted); font-size: 12px; }
+@media (max-width: 1199px) { .talent-toolbar .multi-condition-search { flex-basis: 100%; max-width: none; } }
+@media (max-width: 767px) { .multi-condition-bar > .ant-btn { min-height: 44px; min-width: 44px; } .search-condition-tag > button { width: 32px; height: 32px; } }

@@ -1,0 +1,113 @@
+html:has(.landing-home) { scrollbar-gutter: auto; }
+
+.landing-home {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  padding: 24px clamp(24px, 5vw, 112px) 0;
+  color: var(--ink-strong);
+  background: var(--canvas);
+}
+
+.landing-header {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+.landing-brand { display: flex; align-items: center; gap: 14px; font: 700 32px/1 Arial, sans-serif; }
+.landing-brand img { display: block; width: 54px; height: 54px; }
+.landing-login {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 54px;
+  padding: 10px 32px;
+  border: 0;
+  border-radius: 24px;
+  background: var(--brand-700);
+  color: var(--surface);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.5;
+  cursor: pointer;
+  transition: background-color 160ms ease;
+}
+.landing-login:hover { background: var(--brand-800); }
+.landing-login:active { background: var(--operator-active); }
+.landing-login:focus-visible { outline: 3px solid var(--focus); outline-offset: 5px; }
+
+.landing-hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  flex: 1;
+  min-height: 660px;
+  padding: 24px 0;
+}
+.landing-copy { position: relative; z-index: 1; min-width: 0; padding-bottom: 96px; }
+.landing-title {
+  margin: 0;
+  font-size: clamp(48px, 7.4vw, 128px);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -.045em;
+}
+.landing-title > span { display: block; white-space: nowrap; }
+.landing-title > span:last-child { color: var(--brand-700); }
+.landing-description { margin: 32px 0 0; color: var(--muted); font-size: clamp(16px, 1.6vw, 27px); line-height: 1.7; }
+.landing-visual { position: relative; min-width: 0; align-self: stretch; }
+.landing-art { position: absolute; top: 44%; display: block; width: 110%; max-width: none; height: auto; margin-left: -2%; transform: translateY(-50%); }
+
+.landing-footer { padding: 40px 0 72px; border-top: 1px solid var(--line); }
+.landing-capabilities { display: flex; align-items: center; justify-content: center; gap: 64px; margin: 0; padding: 0; list-style: none; color: var(--muted); }
+.landing-capabilities li { display: flex; align-items: center; gap: 24px; font-size: 24px; line-height: 1.5; }
+.landing-capabilities li + li::before { content: '/'; margin-right: 40px; color: var(--muted); }
+.landing-capabilities .anticon { font-size: 36px; }
+
+@media (min-width: 1920px) {
+  .landing-home { padding-inline: max(80px, calc((100vw - 1760px) / 2)); }
+}
+
+@media (max-width: 1100px) {
+  .landing-hero { min-height: 540px; }
+  .landing-title { font-size: clamp(42px, 6.2vw, 68px); }
+  .landing-description { margin-top: 24px; font-size: 18px; }
+  .landing-capabilities { gap: 24px; }
+  .landing-capabilities li { gap: 16px; font-size: 20px; }
+  .landing-capabilities li + li::before { margin-right: 8px; }
+  .landing-capabilities .anticon { font-size: 28px; }
+}
+
+@media (max-width: 767px) {
+  .landing-home { padding: 24px 24px 0; }
+  .landing-brand { gap: 10px; font-size: 26px; }
+  .landing-brand img { width: 44px; height: 44px; }
+  .landing-login { min-height: 44px; padding: 8px 18px; border-radius: 18px; font-size: 16px; }
+  .landing-hero { grid-template-columns: minmax(0, 1fr); gap: 12px; min-height: auto; padding: 64px 0 24px; }
+  .landing-copy { padding-bottom: 0; }
+  .landing-title { font-size: clamp(40px, 9.8vw, 72px); }
+  .landing-description { max-width: 34em; margin-top: 22px; font-size: 16px; }
+  .landing-art { position: static; width: 100%; max-width: 540px; margin: 0 auto; transform: none; }
+  .landing-footer { padding: 24px 0 32px; }
+  .landing-capabilities { justify-content: space-between; gap: 12px; }
+  .landing-capabilities li { flex-direction: column; gap: 8px; font-size: 15px; }
+  .landing-capabilities li + li::before { content: none; }
+  .landing-capabilities .anticon { font-size: 26px; }
+}
+
+@media (max-width: 359px) {
+  .landing-home { padding-inline: 20px; }
+  .landing-header { gap: 12px; }
+  .landing-brand { gap: 8px; font-size: 24px; }
+  .landing-login { gap: 4px; padding-inline: 12px; font-size: 15px; }
+  .landing-title { font-size: 38px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-login { transition: none; }
+}

@@ -1,0 +1,72 @@
+@startuml
+!include ../theme.puml
+title 简历入库与AI解析时序
+
+actor HR
+actor "Boss/企业邮箱" as Mailbox
+participant "hr-api" as API
+participant "MailIntakePort适配器" as Mail
+database "MySQL" as DB
+participant "ObjectStoragePort" as Storage
+queue "RabbitMQ" as MQ
+participant "解析Worker" as Parser
+participant "OCR/视觉兜底" as Vision
+participant "模型网关" as Model
+database "Elasticsearch" as ES
+
+alt 人工/批量上传
+  HR -> API : 上传PDF/DOC/DOCX或批量文件
+  API -> DB : 创建导入批次与文件处理项
+  API -> API : 扩展名/MIME/大小/哈希校验
+  API -> Storage : 流式保存原始文件到隔离区
+  Storage --> API : backend + bucket + objectKey + contentHash
+  API -> DB : 同事务写ResumeIntake/ResumeVersion/对象元数据/任务/outbox
+  API --> HR : 返回已接收与任务ID
+else 邮件增量采集
+  alt 账号首次启用
+    Mailbox -> Mail : IMAP/SSL读取UIDVALIDITY与LASTUID
+    Mail -> DB : 只保存零基线，不创建旧邮件intake
+  else 后续固定周期增量
+    Mailbox -> Mail : 拉取UID > lastUid的新邮件
+    Mail -> Mail : 配置化主题/发件人规则；Message-ID/来源键幂等
+    Mail -> Storage : 附件流式保存到隔离区并计算哈希
+    Storage --> Mail : backend + bucket + objectKey + contentHash
+    Mail -> DB : 同事务写共享ResumeIntake/对象元数据/任务/outbox并推进游标
+  end
+end
+
+DB -> MQ : Outbox发布 ResumeIntakeCreated/ResumeVersionStored
+MQ -> Parser : 消费解析任务
+Parser -> Storage : 读取原始文件
+Parser -> Parser : 恶意文件扫描与隔离判定
+alt 文件不安全
+  Parser -> DB : 标记隔离并进入人工处置
+else 文件安全
+  Parser -> Parser : PDFBox/POI文本提取
+alt 扫描件、低文本密度或异常页面
+  Parser -> Vision : 指定页面OCR/视觉解析
+  Vision --> Parser : 页面文本与置信信息
+end
+Parser -> Model : 发送归一化文本，AI识别JD/简历并结构化解析
+Model --> Parser : 简历事实、证据和置信度
+Parser -> Parser : Schema、字段和证据校验
+Parser -> DB : 保存不可变parse_snapshot
+Parser -> DB : 身份查重、冲突提示、处理状态
+Parser -> ES : 更新候选人搜索文档与向量
+Parser -> DB : 写匹配任务事件
+Parser -> DB : 更新文件项与批次汇总/checkpoint
+end
+
+note right of Model
+默认不上传整份PDF给模型；
+只对失败页面使用多模态兜底。
+end note
+
+note right of Mail
+SKIPPED/REJECTED或有效任务持久化后推进；
+采集事务失败不推进；异步扫描失败只重试任务；
+恶意文件终态QUARANTINED；UIDVALIDITY变化进入恢复；
+扫描通过前不解析/下载；凭据来自受控Secret；
+不做专项字段脱敏，但日志禁止凭据、令牌和完整正文/附件载荷。
+end note
+@enduml

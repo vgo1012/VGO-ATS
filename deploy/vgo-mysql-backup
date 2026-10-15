@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+readonly container=vgo-mysql-1
+readonly backup_dir=/opt/vgo/shared/backups/mysql-hourly
+
+umask 077
+install -d -m 700 "$backup_dir"
+test "$(realpath "$backup_dir")" = "$backup_dir"
+test "$(stat -c %a "$backup_dir")" = 700
+test "$(docker inspect -f '{{range .Mounts}}{{if eq .Destination "/var/lib/mysql"}}{{.Name}}{{end}}{{end}}' "$container")" = vgo_mysql_data
+test "$(df -Pk "$backup_dir" | awk 'NR==2 {print $4}')" -gt 2097152
+
+exec 9>"$backup_dir/.lock"
+flock -n 9 || { echo 'MySQL backup already running'; exit 0; }
+
+table_count=$(docker exec "$container" sh -lc 'MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysql -uroot -D hr_ai -Nse "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema=DATABASE() AND table_type=0x42415345205441424c45"')
+test "$table_count" -gt 0
+
+stamp=$(date -u +%Y%m%dT%H%M%SZ)
+final="$backup_dir/hr_ai-$stamp.sql.gz"
+partial="$final.partial.$$"
+checksum_partial="$final.sha256.partial.$$"
+trap 'rm -f -- "$partial" "$checksum_partial"' EXIT
+
+docker exec "$container" sh -lc 'MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysqldump -uroot --single-transaction --quick --set-gtid-purged=OFF --no-tablespaces --routines --triggers --events hr_ai' | gzip -1 > "$partial"
+gzip -t "$partial"
+dump_tables=$(gzip -cd "$partial" | grep -c '^CREATE TABLE')
+test "$dump_tables" -eq "$table_count"
+
+hash=$(sha256sum "$partial" | awk '{print $1}')
+printf '%s  %s\n' "$hash" "$(basename "$final")" > "$checksum_partial"
+mv -f -- "$partial" "$final"
+mv -f -- "$checksum_partial" "$final.sha256"
+(cd "$backup_dir" && sha256sum -c "$(basename "$final.sha256")" >/dev/null)
+
+# 只在新备份经校验后清理由本脚本命名的旧文件。
+find "$backup_dir" -maxdepth 1 -type f \( -name 'hr_ai-*.sql.gz' -o -name 'hr_ai-*.sql.gz.sha256' \) -mtime +14 -delete
+printf 'mysql_backup_ok tables=%s file=%s\n' "$dump_tables" "$(basename "$final")"

@@ -1,0 +1,24 @@
+.annual-calendar { container-type: inline-size; min-width: 0; }
+.annual-calendar-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.annual-calendar-month { min-width: 0; padding: 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+.annual-calendar-month h2 { display: flex; align-items: baseline; justify-content: space-between; margin: 0 0 10px; color: var(--ink-strong); font-size: 20px; font-variant-numeric: tabular-nums; }
+.annual-calendar-month h2 small { margin-left: 4px; font-size: 12px; font-weight: 400; }
+.annual-calendar-month-year { color: var(--muted); font-size: 12px; font-weight: 400; }
+.annual-calendar-weekdays, .annual-calendar-dates { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+.annual-calendar-weekdays { margin-bottom: 6px; color: var(--muted); text-align: center; font-size: 12px; line-height: 22px; }
+.annual-calendar-day, .annual-calendar-blank { min-width: 0; height: 34px; }
+.annual-calendar-day { position: relative; display: flex; justify-content: center; align-items: center; gap: 3px; padding: 0; border: 1px solid transparent; border-radius: 5px; color: var(--ink); font: inherit; font-size: 13px; font-variant-numeric: tabular-nums; cursor: pointer; }
+.annual-calendar-day small { font-size: 12px; }
+.annual-calendar-day.workday { background: color-mix(in srgb, var(--annual-workday) 12%, var(--surface)); color: color-mix(in srgb, var(--annual-workday) 55%, var(--ink-strong)); }
+.annual-calendar-day.restday { background: color-mix(in srgb, var(--muted) 12%, var(--surface)); color: var(--ink); }
+.annual-calendar-day.holiday { background: color-mix(in srgb, var(--annual-holiday) 16%, var(--surface)); color: color-mix(in srgb, var(--annual-holiday) 45%, var(--ink-strong)); }
+.annual-calendar-day.unavailable { background: var(--canvas); color: var(--muted); }
+.annual-calendar-day:not(:disabled):hover { border-color: var(--operator); box-shadow: inset 0 0 0 1px var(--operator); }
+.annual-calendar-day:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; z-index: 1; }
+.annual-calendar-day:disabled { cursor: default; }
+.annual-calendar[aria-busy="true"] .annual-calendar-day { cursor: wait; }
+.annual-calendar-day.is-changed { border-color: var(--operator); }
+.annual-calendar-change-dot { position: absolute; top: 2px; right: 2px; width: 4px; height: 4px; border-radius: 50%; background: var(--operator); }
+@container (max-width: 1100px) { .annual-calendar-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@container (max-width: 820px) { .annual-calendar-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@container (max-width: 520px) { .annual-calendar-grid { grid-template-columns: minmax(0, 1fr); } .annual-calendar-day, .annual-calendar-blank { height: 40px; } }

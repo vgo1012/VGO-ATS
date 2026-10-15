@@ -1,0 +1,75 @@
+@startuml
+!include ../theme.puml
+title 内部招聘与外派招聘Application状态机
+
+state "内部招聘流程" as Internal {
+  [*] --> I_SCREEN
+  state "待筛选" as I_SCREEN
+  state "候选人沟通\n（可选，选用时默认电话）" as I_CONTACT
+  state "业务复筛" as I_REVIEW
+  state "按JD可选面试\n（零至三轮）" as I_INTERVIEW
+  state "待决定" as I_DECISION
+  state "Offer流程" as I_OFFER
+  state "待入职" as I_ONBOARD
+  state "已录用" as I_HIRED
+  I_SCREEN --> I_CONTACT : HR为候选人选择沟通
+  I_SCREEN --> I_REVIEW : HR未选择沟通
+  I_CONTACT --> I_REVIEW
+  I_REVIEW --> I_INTERVIEW : HR选择允许的面试步骤
+  I_REVIEW --> I_DECISION : HR未选择面试
+  I_INTERVIEW --> I_INTERVIEW : HR选择允许的下一轮
+  I_INTERVIEW --> I_DECISION
+  I_DECISION --> I_OFFER
+  I_OFFER --> I_ONBOARD
+  I_ONBOARD --> I_HIRED
+  I_HIRED --> [*]
+}
+
+state "外派招聘流程" as External {
+  [*] --> E_SCREEN
+  state "待筛选" as E_SCREEN
+  state "候选人沟通\n（可选，选用时默认电话）" as E_CONTACT
+  state "推送前内部预面（可选）" as E_INTERVIEW
+  state "推送甲方" as E_SUBMIT
+  state "甲方AI面试人工记录（可选）" as E_CLIENT_AI
+  state "甲方面试\n（一至三轮可选）" as E_CLIENT_INTERVIEW
+  state "人工招聘决定" as E_DECISION
+  state "Offer流程" as E_OFFER
+  state "待入职" as E_ONBOARD
+  state "已入职" as E_HIRED
+  E_SCREEN --> E_CONTACT : HR为候选人选择沟通
+  E_SCREEN --> E_INTERVIEW : 未选沟通，选择内部预面
+  E_SCREEN --> E_SUBMIT : 沟通/内部预面均未选
+  E_CONTACT --> E_INTERVIEW : HR选择内部预面
+  E_CONTACT --> E_SUBMIT : HR未选择内部预面
+  E_INTERVIEW --> E_SUBMIT
+  E_SUBMIT --> E_CLIENT_AI : 已SENT且HR选择甲方AI面试
+  E_SUBMIT --> E_CLIENT_INTERVIEW : 已SENT且HR选择甲方面试
+  E_SUBMIT --> E_DECISION : 已SENT且甲方直接通过
+  E_CLIENT_AI --> E_CLIENT_INTERVIEW : HR选择后续面试
+  E_CLIENT_AI --> E_DECISION : 未选择后续面试
+  E_CLIENT_AI --> E_DECISION : 带原因撤回，当前步骤WITHDRAWN后重选路
+  E_CLIENT_INTERVIEW --> E_CLIENT_INTERVIEW : HR选择下一轮
+  E_CLIENT_INTERVIEW --> E_DECISION : 面试流程结束
+  E_CLIENT_INTERVIEW --> E_DECISION : 带原因撤回，当前步骤WITHDRAWN后重选路
+  E_DECISION --> E_OFFER : 人工PASS决定
+  E_OFFER --> E_ONBOARD
+  E_ONBOARD --> E_HIRED
+  E_HIRED --> [*]
+}
+
+note bottom
+任一活动阶段可通过记录人工REJECT/WITHDRAW决定进入“未通过、候选人退出”；系统不设置暂缓；
+AI只能建议迁移，正式迁移由HR或确定性系统事件执行。
+全部招聘按JD固化允许步骤模板，由HR逐候选人选路；NOT_SELECTED无待办，实际步骤须跟进留痕；
+流程模板和正式评分配置均ACTIVE后才可创建Application/正式评分，否则只保存JD草稿；
+未开始选择可带原因修改；已开始步骤须WITHDRAWN后再选路；
+每条Application必须有可追加更正的人工决定；外派甲方步骤/通过精确绑定同一deliveryStatus=SENT推荐；
+普通甲方拒绝只在勾选明确禁推且原因/来源完整时原子创建限制；
+有效公司黑名单阻断并列出影响项，不批量淘汰，由HR逐条REJECT/WITHDRAW；
+甲方AI面试只记外部事实，本系统不接入、不执行、不判断、不负责结果；
+Offer 日常追加记录只有“处理中”和“已发出”，谈薪/审批合并为“处理中”；
+未开始为系统初态，已发出直接以真实入职事件确认入职；
+已接受仅兼容历史只读，更正不覆盖历史。
+end note
+@enduml

@@ -1,0 +1,94 @@
+/* 日程详情使用宽档案布局；嵌入招聘流程的面试表单继续沿用原布局。 */
+.interview-facts-dialog.workspace-dialog-reader { --reader-height: 720px; }
+.interview-facts-dialog .interview-person-heading {
+  gap: 6px 16px;
+  margin-bottom: 16px;
+  padding: 12px 16px;
+  border-inline-start: 3px solid var(--operator);
+  background: var(--canvas);
+  border-radius: 0 8px 8px 0;
+}
+.interview-facts-dialog .interview-person-heading h3 { font-size: 22px; line-height: 1.4; }
+.interview-facts-dialog .ant-card-body { padding: 8px 0 12px; }
+.interview-facts-dialog .interview-summary-card > .ant-card-body { padding-top: 0; padding-bottom: 0; }
+.interview-facts-dialog .interview-summary-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr);
+  padding: 0 8px 4px;
+}
+.interview-facts-dialog .interview-summary-column { min-width: 0; }
+.interview-facts-dialog .interview-summary-column + .interview-summary-column {
+  margin-inline-start: 24px;
+  padding-inline-start: 24px;
+  border-inline-start: 1px solid var(--line);
+}
+.interview-facts-dialog .interview-conference-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 4px;
+  padding: 14px 16px 2px;
+  border-top: 1px solid var(--line);
+  text-align: center;
+}
+.interview-facts-dialog .interview-conference-content { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 8px; }
+.interview-facts-dialog .interview-conference-label { font-weight: 600; }
+.interview-facts-dialog .ant-descriptions-row > th,
+.interview-facts-dialog .ant-descriptions-row > td { padding-bottom: 8px; }
+.interview-facts-dialog .interview-detail-actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 16px 24px;
+  margin-top: 12px;
+  padding: 14px 16px;
+  border-block: 1px solid var(--line);
+  background: var(--canvas);
+}
+.interview-facts-dialog .interview-action-label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+.interview-facts-dialog .schedule-recruitment-actions { margin-left: 0; padding-left: 24px; border-left: 1px solid var(--line); }
+.interview-facts-dialog .ant-table-content { max-height: none; scrollbar-gutter: auto; }
+.interview-facts-dialog .ant-table-content > table > thead { position: static; }
+.interview-facts-dialog .ant-table-cell { vertical-align: top; }
+.interview-facts-dialog .ant-empty { margin-block: 12px; }
+@media (max-width: 767px) {
+  .interview-facts-dialog .interview-summary-columns { grid-template-columns: minmax(0, 1fr); padding-inline: 0; }
+  .interview-facts-dialog .interview-summary-column + .interview-summary-column {
+    margin: 4px 0 0;
+    padding: 12px 0 0;
+    border-inline-start: 0;
+    border-top: 1px solid var(--line);
+  }
+  .interview-facts-dialog .interview-conference-row,
+  .interview-facts-dialog .interview-conference-content { justify-content: flex-start; }
+  .interview-facts-dialog .interview-conference-row { padding-inline: 0; text-align: start; }
+  .interview-facts-dialog .interview-detail-actions { grid-template-columns: minmax(0, 1fr); padding: 12px; gap: 12px; }
+  .interview-facts-dialog .schedule-recruitment-actions { padding: 12px 0 0; border-left: 0; border-top: 1px solid var(--line); }
+  .interview-facts-dialog .interview-person-heading { align-items: flex-start; flex-direction: column; padding: 10px 12px; }
+}
+
+.workspace-dialog.interview-operation-dialog .ant-modal-container { height: auto; }
+.interview-operation-dialog .ant-modal-header { padding-bottom: 14px; }
+.interview-operation-dialog .ant-modal-body { padding-bottom: 16px; }
+.interview-operation-dialog .ant-modal-footer { margin-top: 0; padding-top: 16px; padding-bottom: 16px; }
+.interview-operation-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 16px; }
+.interview-operation-dialog .interview-operation-grid .ant-form-item { min-width: 0; margin-bottom: 0; }
+.interview-operation-grid .ant-form-item-label { padding-bottom: 4px; }
+.interview-operation-full { grid-column: 1 / -1; min-width: 0; }
+.interview-meeting-switches {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  min-width: 0;
+}
+@media (max-width: 600px) {
+  .interview-operation-grid { grid-template-columns: minmax(0, 1fr); }
+  .interview-meeting-switches { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+}

@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+readonly health_url="https://www.vgo.example.org/healthz"
+readonly secret_file="/opt/vgo/shared/operations-secrets.yml"
+readonly state_file="/var/lib/vgo-monitor/health-state"
+readonly backup_dir="/opt/vgo/shared/backups/mysql-hourly"
+
+send_alert() {
+  local status="$1"
+  local details="$2"
+  if [[ ! -r "$secret_file" ]]; then
+    echo "mail alert skipped: missing $secret_file" >&2
+    return 0
+  fi
+
+  python3 - "$secret_file" "$status" "$details" "$health_url" <<'PY'
+from email.message import EmailMessage
+from pathlib import Path
+import smtplib
+import socket
+import ssl
+import sys
+
+secret_file, status, details, health_url = sys.argv[1:]
+config = {}
+for raw_line in Path(secret_file).read_text(encoding="utf-8").splitlines():
+    if raw_line and not raw_line.lstrip().startswith("#") and ":" in raw_line:
+        key, value = raw_line.split(":", 1)
+        config[key.strip()] = value.strip().strip('"').strip("'")
+
+required = ("smtp-host", "smtp-port", "smtp-username", "smtp-authorization-code", "smtp-from", "alert-recipient")
+if any(not config.get(key) for key in required):
+    print("mail alert skipped: incomplete SMTP configuration", file=sys.stderr)
+    raise SystemExit(0)
+
+message = EmailMessage()
+message["From"] = f'VGO Monitor <{config["smtp-from"]}>'
+message["To"] = config["alert-recipient"]
+message["Subject"] = f"[VGO] Production {status}"
+message.set_content(
+    f"{details}\nURL: {health_url}\nHost: {socket.getfqdn()}"
+)
+with smtplib.SMTP_SSL(
+    config["smtp-host"], int(config["smtp-port"]), timeout=30, context=ssl.create_default_context()
+) as smtp:
+    smtp.login(config["smtp-username"], config["smtp-authorization-code"])
+    smtp.send_message(message)
+PY
+}
+
+mkdir -p "$(dirname "$state_file")"
+previous_state="$(cat "$state_file" 2>/dev/null || true)"
+failures=()
+if ! curl --fail --silent --show-error --retry 2 --retry-delay 5 --max-time 20 "$health_url" >/dev/null; then
+  failures+=("The public HTTPS health endpoint failed after retries.")
+fi
+if [[ ! -d "$backup_dir" || -z "$(find "$backup_dir" -maxdepth 1 -type f -name 'hr_ai-*.sql.gz.sha256' -mmin -180 -print -quit)" ]]; then
+  failures+=("No validated local MySQL backup was created in the last three hours.")
+fi
+if (( ${#failures[@]} == 0 )); then
+  if [[ "$previous_state" == "failed" ]]; then
+    send_alert "recovered" "The public HTTPS health endpoint and local MySQL backup are healthy."
+  fi
+  printf 'healthy\n' >"$state_file"
+  exit 0
+fi
+
+if [[ "$previous_state" != "failed" ]]; then
+  send_alert "unhealthy" "$(printf '%s ' "${failures[@]}")"
+fi
+printf 'failed\n' >"$state_file"
+exit 1

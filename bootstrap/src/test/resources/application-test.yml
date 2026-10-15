@@ -1,0 +1,13 @@
+# 无数据库的 MVC/模块装配测试会显式排除 DataSource；测试就绪组不得引用不存在的 db 健康贡献者。
+management:
+  endpoint:
+    health:
+      group:
+        readiness:
+          include: readinessState
+
+# 无数据库测试不启动企业微信面试日程恢复轮询，避免访问已替换为 Mock 的 Mapper。
+hr:
+  wecom:
+    collaboration:
+      worker-enabled: false

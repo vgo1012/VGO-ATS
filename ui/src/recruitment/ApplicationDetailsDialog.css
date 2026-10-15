@@ -1,0 +1,44 @@
+/* 招聘档案以身份摘要和流程对照为主，沿用工作台蓝色 Token。 */
+.application-detail {
+  --application-accent: var(--operator);
+  --application-ink: var(--ink);
+  --application-muted: var(--muted);
+  --application-line: var(--line);
+  --application-surface: var(--brand-100);
+}
+.application-profile {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 18px;
+  border-inline-start: 3px solid var(--application-accent);
+  border-radius: 0 8px 8px 0;
+  background: var(--application-surface);
+  color: var(--application-ink);
+}
+.application-profile-person { min-width: 0; }
+.application-profile-name { font-size: 20px; font-weight: 650; line-height: 1.4; overflow-wrap: anywhere; }
+.application-profile-job { margin-top: 4px; font-size: 14px; overflow-wrap: anywhere; }
+.application-profile-status { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; min-width: 0; flex-shrink: 1; overflow-wrap: anywhere; }
+.application-profile-status small { color: var(--application-muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+.application-detail-heading { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--application-line); }
+.application-detail .candidate-blacklist-details .ant-card-head { min-height: 0; }
+.application-detail .candidate-blacklist-details .ant-card-head-title { padding: 0 0 8px; font-size: 14px; }
+.application-detail .candidate-blacklist-details .ant-card-body { padding: 0; color: var(--application-muted); }
+.application-materials { min-width: 0; }
+.application-materials h2 { font-size: 14px; line-height: 22px; font-weight: 650; margin: 0 0 8px; }
+.application-material-empty { color: var(--application-muted); }
+.workspace-dialog .application-process .ant-card-head { min-height: 0; }
+.workspace-dialog .application-process .ant-card-head-title { padding: 0 0 12px; font-size: 16px; }
+.workspace-dialog .application-process .ant-card-body { padding: 0; }
+/* 纵向只使用弹窗滚动；窄屏表格仍可独立横向滚动。 */
+.workspace-dialog .application-process .ant-table-content { max-height: none; scrollbar-gutter: auto; }
+.workspace-dialog .application-process .ant-table-content > table > thead { position: static; }
+.workspace-dialog .application-process .ant-table-cell { padding: 12px 10px; vertical-align: top; line-height: 1.65; }
+.workspace-dialog .application-process .ant-table-cell small { color: var(--application-muted); font-variant-numeric: tabular-nums; }
+.application-detail .ant-timeline-item-content { min-width: 0; overflow-wrap: anywhere; }
+@media (max-width: 767px) {
+  .application-profile { flex-direction: column; padding: 12px 14px; }
+  .application-profile-status { align-items: flex-start; flex-shrink: 1; }
+  .application-detail-heading { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+}

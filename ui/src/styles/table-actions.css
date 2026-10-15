@@ -1,0 +1,83 @@
+/* 表格“操作”列沿用 Ant Design 的按钮语义，统一紧凑尺寸与反馈。 */
+.ant-table .table-action-cell .ant-btn:not(.ant-btn-text) {
+  min-height: 32px;
+  height: auto;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 18px;
+  white-space: normal;
+  box-shadow: none;
+  transition: color var(--motion-fast) var(--motion-ease), background-color var(--motion-fast) var(--motion-ease), border-color var(--motion-fast) var(--motion-ease), box-shadow var(--motion-fast) var(--motion-ease), transform var(--motion-fast) var(--motion-ease);
+}
+
+.ant-table .table-action-cell .ant-btn-link:not(.ant-btn-text),
+.ant-table .table-action-cell .ant-btn-default:not(.ant-btn-text) {
+  border: 1px solid var(--line);
+  color: var(--ink);
+  background: var(--surface);
+}
+
+.ant-table .table-action-cell .ant-btn:not(:disabled):not(.ant-btn-disabled):hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px #17233f14;
+}
+
+.ant-table .table-action-cell .ant-btn-link:not(:disabled):hover,
+.ant-table .table-action-cell .ant-btn-default:not(:disabled):not(.ant-btn-dangerous):hover {
+  border-color: var(--brand-700);
+  color: var(--brand-800);
+  background: var(--brand-100);
+}
+
+.ant-table .table-action-cell .ant-btn-dangerous:not(.ant-btn-primary) {
+  border-color: color-mix(in srgb, var(--danger) 32%, var(--line));
+  color: #b42332;
+  background: var(--surface);
+}
+
+.ant-table .table-action-cell .ant-btn-dangerous:not(:disabled):hover {
+  border-color: var(--danger);
+  color: #a61b29;
+  background: #fff1f2;
+}
+
+.ant-table .table-action-cell .ant-btn:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.table-action-stack,
+.table-action-stack.ant-space,
+.table-action-stack .ant-space {
+  width: 100%;
+}
+
+.table-action-stack > .ant-space-item,
+.table-action-stack .ant-space > .ant-space-item {
+  width: 100%;
+}
+
+.table-action-stack .ant-btn {
+  width: 100%;
+}
+
+.table-action-stack small {
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.onboarded-page .table-action-cell > .ant-btn { width: 100%; }
+
+@media (max-width: 767px), (pointer: coarse) {
+  .ant-table .table-action-cell .ant-btn:not(.ant-btn-text) { min-height: 44px; }
+  .ant-table col.ant-table-selection-col { width: 52px !important; }
+  .ant-table .ant-table-selection-column { padding-inline: 4px !important; }
+  .ant-table .ant-table-selection-column .ant-checkbox-wrapper { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ant-table .table-action-cell .ant-btn:not(.ant-btn-text) { transition: none; }
+  .ant-table .table-action-cell .ant-btn:not(:disabled):not(.ant-btn-disabled):hover { transform: none; }
+}

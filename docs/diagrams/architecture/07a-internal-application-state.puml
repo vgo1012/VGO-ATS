@@ -1,0 +1,63 @@
+@startuml
+!include ../theme.puml
+title 内部招聘Application状态机
+
+[*] --> SCREENING
+state "待筛选" as SCREENING
+state "候选人沟通\n（可选，选用时默认电话）" as CONTACT
+state "业务复筛" as REVIEW
+state "按JD模板的可选面试\n（零轮/一面/二面/三面）" as INTERVIEW
+state "待决定" as DECISION
+state "Offer流程" as OFFER
+state "待入职" as ONBOARD
+state "已录用" as HIRED
+state "未通过" as REJECTED
+state "候选人退出" as WITHDRAWN
+
+SCREENING --> CONTACT : HR为候选人选择沟通
+SCREENING --> REVIEW : HR未选择沟通
+CONTACT --> REVIEW : 候选人有意向
+REVIEW --> INTERVIEW : HR选择模板允许的面试
+REVIEW --> DECISION : HR未选择面试
+INTERVIEW --> INTERVIEW : HR选择模板允许的下一轮
+INTERVIEW --> DECISION : 当前轮通过且无下一轮
+DECISION --> OFFER : 决定推进
+OFFER --> ONBOARD : 记录已发出后确认真实入职
+ONBOARD --> HIRED : 确认入职
+HIRED --> [*]
+
+SCREENING --> REJECTED : 人工REJECT决定
+CONTACT --> WITHDRAWN : 人工WITHDRAW决定
+REVIEW --> REJECTED : 人工REJECT决定
+INTERVIEW --> REJECTED : 人工REJECT决定
+DECISION --> REJECTED : 人工REJECT决定
+DECISION --> WITHDRAWN : 人工WITHDRAW决定
+REJECTED --> [*]
+WITHDRAWN --> [*]
+REJECTED --> OFFER : Offer终止后重新开启
+WITHDRAWN --> OFFER : Offer终止后重新开启
+
+note right of DECISION
+AI只建议下一步；
+HR必须提交PASS/REJECT/WITHDRAW、
+非空简短原因、操作者和时间；
+只有PASS可进入Offer。
+end note
+
+note left of INTERVIEW
+Application固化创建时的JD/流程模板版本；
+只有流程模板和正式评分配置均ACTIVE才可创建；
+模板只定义允许步骤，HR按候选人选择实际路径；
+未采用步骤为NOT_SELECTED且无待办/deadline；
+未开始选择可带原因修改，已开始须WITHDRAWN后再选路；
+实际步骤要求负责人、截止时间、有效跟进和结果。
+end note
+
+note right of OFFER
+Offer 日常状态为处理中、已发出；未开始是系统初态。
+默认直接记录已发出，已发出直接确认真实入职；谈薪/审批均归“处理中”。
+已接受仅兼容历史只读，更正/重新开启只追加历史。
+Application恢复仅限由Offer终止产生的结果且原因必填。
+人工决定更正只追加，Offer/终止后须先重新开启。
+end note
+@enduml

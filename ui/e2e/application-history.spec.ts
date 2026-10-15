@@ -1,0 +1,72 @@
+import AxeBuilder from '@axe-core/playwright';
+import { expect, test } from '@playwright/test';
+import { reviewWorkspace } from './fixtures/ux-review';
+
+const stamp='2026-09-09T01:00:00Z';
+const makeApplication=(id:string,currentStage:string,outcome:string|null=null)=>({id,candidateId:id,demandId:'demand-a',jdId:'jd-a',jdVersionId:'jd-v2',resumeVersionId:`resume-${id}`,workflowTemplateVersionId:'workflow-v1',matchPlanVersionId:'plan-v1',recruitmentType:'INTERNAL',currentStage,outcome,ownerUserId:'hr-a',ownerDepartmentId:'dept-a',terminalAt:currentStage==='ONBOARDED'||currentStage==='TERMINATED'?stamp:null,version:1,createTime:stamp,updateTime:stamp});
+
+test('应聘记录按进行中、已完成、已取消与全部状态独立分页',async({page})=>{
+  await reviewWorkspace(page);
+  const active=makeApplication('active','IN_PROCESS');
+  const archived=[makeApplication('hired','ONBOARDED','PASS'),makeApplication('rejected','TERMINATED','REJECT')];
+  const requests:URLSearchParams[]=[];
+  const writes:string[]=[];
+  page.on('request',request=>{if(request.method()!=='GET')writes.push(request.url());});
+  await page.route('**/api/v1/applications?**',route=>{
+    const params=new URL(route.request().url()).searchParams;requests.push(params);
+    const lifecycle=params.get('lifecycle');
+    const stage=params.get('stage');
+    const items=stage==='ONBOARDED'?[archived[0]]:stage==='TERMINATED'?[archived[1]]:lifecycle==='ACTIVE'?[active]:[active,...archived];
+    return route.fulfill({json:{items,hasMore:lifecycle==='ACTIVE'&&!params.has('cursor'),nextCursor:lifecycle==='ACTIVE'&&!params.has('cursor')?'active-next':null}});
+  });
+  await page.route('**/api/v1/candidates/*',route=>{
+    const id=new URL(route.request().url()).pathname.split('/').at(-1)!;
+    if(!['active','hired','rejected'].includes(id))return route.fallback();
+    return route.fulfill({json:{id,fullName:({active:'推进候选人',hired:'入职候选人',rejected:'淘汰候选人'} as Record<string,string>)[id]}});
+  });
+  await page.route('**/api/v1/candidate-batch?**',route=>{
+    const names:Record<string,string>={active:'推进候选人',hired:'入职候选人',rejected:'淘汰候选人'};
+    const ids=new URL(route.request().url()).searchParams.getAll('candidateIds');
+    return route.fulfill({json:ids.filter(id=>names[id]).map(id=>({id,fullName:names[id]}))});
+  });
+  await page.route('**/api/v1/applications/rejected',route=>route.fulfill({json:{application:archived[1],collaboratorUserIds:[],workflowSteps:[],decisions:[],offerStatusRecords:[],elapsedSeconds:100}}));
+  await page.goto('/recruitment');
+  await expect(page.getByRole('combobox',{name:'任务状态',exact:true}).locator('..')).toContainText('进行中');
+  await expect(page.getByRole('button',{name:'推进候选人',exact:true})).toBeVisible();
+  await expect(page.getByRole('button',{name:'入职候选人',exact:true})).toHaveCount(0);
+  expect(requests.at(-1)?.get('lifecycle')).toBe('ACTIVE');
+  await page.getByRole('button',{name:'下一页',exact:true}).click();
+  await expect.poll(()=>requests.at(-1)?.get('cursor')).toBe('active-next');
+  await page.getByRole('combobox',{name:'任务状态',exact:true}).click();
+  await page.locator('.ant-select-item-option-content').getByText('已完成',{exact:true}).click();
+  await expect(page.getByRole('button',{name:'入职候选人',exact:true})).toBeVisible();
+  await expect(page.getByRole('button',{name:'淘汰候选人',exact:true})).toHaveCount(0);
+  expect(requests.at(-1)?.get('lifecycle')).toBe('ALL');
+  expect(requests.at(-1)?.get('stage')).toBe('ONBOARDED');
+  await expect(page.getByText('更多条件',{exact:true})).toHaveCount(0);
+  await expect(page.getByRole('combobox',{name:'当前步骤',exact:true})).toHaveCount(0);
+  expect(requests.at(-1)?.has('cursor')).toBe(false);
+  await expect(page.getByRole('button',{name:'推进候选人',exact:true})).toHaveCount(0);
+  await page.reload();
+  await expect(page.getByRole('combobox',{name:'任务状态',exact:true}).locator('..')).toContainText('已完成');
+  await page.getByRole('button',{name:'重置',exact:true}).click();
+  await expect(page.getByRole('combobox',{name:'任务状态',exact:true}).locator('..')).toContainText('进行中');
+  await page.getByRole('combobox',{name:'任务状态',exact:true}).click();
+  await page.locator('.ant-select-item-option-content').getByText('已取消',{exact:true}).click();
+  await expect(page.getByRole('button',{name:'淘汰候选人',exact:true})).toBeVisible();
+  expect(requests.at(-1)?.get('stage')).toBe('TERMINATED');
+  await page.getByRole('button',{name:'淘汰候选人',exact:true}).click();
+  await expect(page.getByRole('dialog',{name:'招聘活动详情'})).toBeVisible();
+  await page.getByRole('dialog',{name:'招聘活动详情'}).getByRole('button',{name:'关闭',exact:true}).click();
+  await expect(page.getByRole('dialog',{name:'招聘活动详情'})).toHaveCount(0);
+  await page.getByRole('combobox',{name:'任务状态',exact:true}).click();
+  await page.locator('.ant-select-item-option-content').getByText('全部状态',{exact:true}).click();
+  await expect(page.getByRole('button',{name:'推进候选人',exact:true})).toBeVisible();
+  await expect(page.getByRole('button',{name:'入职候选人',exact:true})).toBeVisible();
+  await expect(page.getByRole('button',{name:'淘汰候选人',exact:true})).toBeVisible();
+  expect(requests.at(-1)?.get('lifecycle')).toBe('ALL');
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1)).toBe(true);
+  await expect(page.locator('.recruitment-ledger .ant-tag-processing').first()).toHaveCSS('color','rgb(0, 92, 101)');
+  expect((await new AxeBuilder({page}).include('.recruitment-ledger').analyze()).violations).toEqual([]);
+  expect(writes).toEqual([]);
+});

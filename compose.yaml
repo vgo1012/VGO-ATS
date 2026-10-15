@@ -1,0 +1,96 @@
+# 仅供本机开发；所有密码均为公开、可丢弃示例，不能用于共享或生产环境。
+name: vgo-local
+
+services:
+  mysql:
+    image: mysql:8.4.11@sha256:85b9bf2e29cf836ecb8c2a15a935d4ba0c606631dff1dd79531a11983c638f2a
+    environment:
+      TZ: Asia/Shanghai
+      MYSQL_ROOT_PASSWORD: local-development-root-password
+      MYSQL_DATABASE: vgo_hr
+      MYSQL_USER: hr_app
+      MYSQL_PASSWORD: local-development-db-password
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_0900_ai_ci
+      - --default-time-zone=+08:00
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.19.21@sha256:cbf5cd6cfe5532a9c02d510c66d238bf329cd51fe3d57170a2a880aca7d47419
+    environment:
+      discovery.type: single-node
+      xpack.security.enabled: "true"
+      xpack.security.autoconfiguration.enabled: "false"
+      xpack.security.http.ssl.enabled: "false"
+      ELASTIC_PASSWORD: local-development-search-password
+      ES_JAVA_OPTS: -Xms512m -Xmx512m
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    mem_limit: 2g
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS -u elastic:$$ELASTIC_PASSWORD 'http://127.0.0.1:9200/_cluster/health?wait_for_status=yellow&timeout=5s' >/dev/null"]
+      interval: 5s
+      timeout: 10s
+      retries: 30
+      start_period: 60s
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      SPRING_PROFILES_ACTIVE: dev,docker
+      # 容器与本机开发使用同一时区，避免定时任务目录出现 UTC 偏移。
+      TZ: Asia/Shanghai
+      JAVA_TOOL_OPTIONS: -Djava.awt.headless=true -Duser.timezone=Asia/Shanghai
+      # 候选人长期保留待筛选，关闭超时待处置和自动转共享。
+      HR_RESUMELIFECYCLE_ENABLED: "false"
+      HR_BOOTSTRAP_ADMIN_ENABLED: "true"
+      HR_BOOTSTRAP_ADMIN_WORK_EMAIL: admin@example.org
+      HR_BOOTSTRAP_ADMIN_PASSWORD: local-development-admin-password
+      HR_IDENTITY_LOGIN_ALIAS_ADMIN_WORK_EMAIL: admin@example.org
+    depends_on:
+      mysql:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
+    volumes:
+      - object_data:/app/.runtime
+      - backend_logs:/app/logs
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8080/actuator/health/readiness"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 60s
+
+  web:
+    build:
+      context: .
+      dockerfile: ui/Dockerfile
+      target: local
+    ports:
+      - "127.0.0.1:5173:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1/healthz"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+
+volumes:
+  mysql_data:
+  elasticsearch_data:
+  object_data:
+  backend_logs:

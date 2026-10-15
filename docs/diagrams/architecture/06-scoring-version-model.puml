@@ -1,0 +1,100 @@
+@startuml
+!include ../theme.puml
+title 五维专业适配、受控条件与结果快照模型
+hide methods
+skinparam classAttributeIconSize 0
+
+class "JD匹配方案版本\nJdMatchPlanVersion" as Plan {
+  jdVersionId
+  versionNo
+  status: DRAFT/ACTIVE/SUPERSEDED
+  configuredByUserId
+}
+class "五维权重版本\nWeightProfileVersion" as Weight {
+  ownerUserId
+  skills/role/years
+  responsibility/industryProject
+}
+class "官方条件方案版本\nControlledCriterionPlanVersion" as Criteria {
+  versionNo
+  planMaxBonusPoints <= 30
+  configuredByUserId
+}
+class "受控条件定义\nControlledCriterionDefinition" as Criterion {
+  code: AGE/GENDER/EDUCATION/
+  CERTIFICATE/LANGUAGE
+  level: MUST/PREFER/DISPLAY_ONLY
+  operator/expectedValue
+  bonusPoints: 5/10/20
+}
+class "个人偏好选择版本\nPersonalPreferSelectionVersion" as Selection {
+  ownerUserId
+  selectedPreferIds
+}
+class "固定基础评价\nBaseEvaluationSnapshot" as Evaluation {
+  resumeFactSnapshotId
+  jdParseSnapshotId
+  fiveDimensionScores
+  evidenceCoverage
+  reliabilityLevel
+}
+class "条件评价\nCriterionEvaluation" as CriterionResult {
+  status: SATISFIED/UNKNOWN/
+  NOT_SATISFIED
+  actualValue/evidenceRefs
+}
+class "派生匹配结果\nWeightedMatchResult" as Weighted {
+  baseScore: 0..100
+  bonusScore/planMaxBonusPoints
+  selectedMaxBonusPoints
+  compositeReferenceScore
+  mustTier/sortMode
+}
+class "亮点/风险/未知\nMatchFlag" as Flag {
+  type
+  severity
+  reviewStatus
+}
+class "AI运行记录\nAiRun" as AiRun {
+  provider/model/promptVersion
+  inputHash/tokens/cost
+}
+class "HR复核\nEvaluationReview" as Review {
+  action/reason/reviewerId
+}
+
+Plan "1" -- "1" Criteria
+Criteria "1" -- "1..*" Criterion
+Criteria "1" -- "0..*" Selection
+Evaluation "1" -- "0..*" CriterionResult
+Criterion "1" -- "0..*" CriterionResult
+Evaluation "1" -- "0..*" Weighted
+Plan "1" -- "0..*" Weighted
+Weight "1" -- "0..*" Weighted
+Criteria "1" -- "0..*" Weighted
+Selection "0..1" -- "0..*" Weighted
+Evaluation "1" -- "0..*" Flag
+Evaluation "1" -- "0..*" AiRun
+Evaluation "1" -- "0..*" Review
+
+note bottom of Weight
+专业目录固定五维，默认权重20/20/20/20/20；
+仅修改权重时复用基础评价，不重新调用AI。
+end note
+
+note bottom of Criteria
+MUST形成排序层级；PREFER仅取5/10/20且满足时加分；
+官方方案全部PREFER合计不超过30；
+DISPLAY_ONLY只展示，个人不能关闭官方MUST。
+end note
+
+note top of Plan
+仅SUPER_ADMIN持有人创建/激活；同一JD仅一个ACTIVE；
+变更复制新版本，只影响后续任务，历史评分不重跑。
+end note
+
+note bottom of Weighted
+基础分、附加分/上限和综合参考分分别保存；
+不同方案或不同上限不得无提示直接比较。
+end note
+@enduml

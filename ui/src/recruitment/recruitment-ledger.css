@@ -1,0 +1,82 @@
+.recruitment-ledger { display: flex; flex-direction: column; gap: 10px; min-height: 0; }
+.recruitment-toolbars { flex-shrink: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; }
+.recruitment-toolbar-title { flex: none; font-family: inherit; font-size: var(--type-body); font-weight: 700; line-height: 1.5; color: var(--ink); white-space: nowrap; }
+.recruitment-date-toolbar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; padding: 8px 12px; border-bottom: 1px solid var(--line); }
+.recruitment-date-controls, .recruitment-date-jump { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; font-size: 12px; }
+.recruitment-date-controls > b { margin-right: 8px; }
+.recruitment-date-controls > .ant-btn { min-width: 66px; }
+.recruitment-date-controls .current-week { background: var(--brand-100); color: var(--brand-700); border-color: transparent; font-weight: 600; }
+.recruitment-date-label { display: inline-flex; align-items: center; gap: 18px; border: 1px solid var(--line); border-radius: 5px; padding: 5px 12px; font-weight: 600; }
+.recruitment-date-jump { color: var(--muted); }
+.recruitment-date-jump .ant-picker { width: 140px; }
+.recruitment-filter-card { display: grid; grid-template-columns: auto minmax(0, 1fr) 92px; align-items: center; gap: 14px; padding: 8px 12px; min-width: 0; }
+.recruitment-filter-grid { display: grid; grid-template-columns: minmax(260px, 1.4fr) repeat(4, minmax(0, 1fr)); gap: 14px; }
+.recruitment-filter-grid > label { min-width: 0; display: flex; flex-direction: column; gap: 4px; color: var(--ink); font-size: 12px; }
+.recruitment-filter-grid .jd-selector { width: 100%; }
+.recruitment-ledger .pipeline-table-card { min-height: 300px; border-radius: 6px; }
+.recruitment-ledger .pipeline-table-card .ant-table-thead > tr > th { padding: 8px 12px; font-size: 12px; }
+.recruitment-ledger .pipeline-table-card .ant-table-tbody > tr > td { padding: 8px 12px; font-size: 12px; vertical-align: middle; }
+.recruitment-ledger .pipeline-table-card .table-link { min-height: 0; height: auto; padding: 0; font-size: 15px; font-weight: 650; }
+.recruitment-ledger .ant-tag.ant-tag-processing { color: var(--brand-800) !important; }
+.recruitment-table-scroll-hint { display: none; margin: 0; padding: 8px 12px; border-bottom: 1px solid var(--line); background: var(--canvas); color: var(--muted); font-size: 12px; line-height: 1.5; }
+.recruitment-stage { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.recruitment-stage-options { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px; }
+.recruitment-stage-options > .ant-btn { --ant-btn-text-color-hover: var(--brand-700); --ant-btn-text-color-active: var(--brand-700); --ant-btn-border-color-hover: var(--brand-700); --ant-btn-border-color-active: var(--brand-700); height: 32px; min-height: 32px; min-width: 60px; border: 1px solid var(--line); padding: 0 12px; border-radius: 6px; font-size: 13px; line-height: 20px; white-space: nowrap; color: var(--muted); background: var(--canvas); box-shadow: none; }
+.recruitment-stage-options > .ant-btn-default:not(:disabled):not(.ant-btn-disabled):hover,
+.recruitment-stage-options > .ant-btn-default:not(:disabled):not(.ant-btn-disabled):active { color: var(--brand-800); border-color: var(--brand-800); }
+.recruitment-stage-options > .ant-btn.selected { color: var(--surface); background: var(--brand-700); border-color: var(--brand-700); }
+.recruitment-stage-options > .ant-btn:is(.stage-pending, .stage-interview, .stage-onboarded):not(.selected):not(:disabled):is(:hover, :focus-visible) { color: var(--brand-800); border-color: var(--brand-700); background: var(--brand-100); }
+.recruitment-stage-options > .ant-btn.stage-ended:not(:disabled):is(:hover, :focus-visible) { color: color-mix(in srgb, var(--danger) 70%, var(--ink)); border-color: color-mix(in srgb, var(--danger) 45%, var(--line)); background: color-mix(in srgb, var(--danger) 8%, var(--surface)); }
+.recruitment-stage-options > .ant-btn.stage-ended.selected { color: color-mix(in srgb, var(--danger) 70%, var(--ink)); border-color: color-mix(in srgb, var(--danger) 45%, var(--line)); background: color-mix(in srgb, var(--danger) 8%, var(--surface)); }
+.recruitment-stage-options > .ant-btn.stage-blacklist:not(:disabled):is(:hover, :focus-visible) { color: color-mix(in srgb, var(--muted) 50%, var(--ink)); border-color: var(--muted); background: color-mix(in srgb, var(--muted) 14%, var(--surface)); }
+.recruitment-stage-options > .ant-btn.selected:not(:disabled):is(:hover, :focus-visible) { color: var(--surface); border-color: var(--brand-800); background: var(--brand-800); }
+.recruitment-completed { align-items: center; gap: 6px; color: var(--muted); }
+.recruitment-completed .ant-tag { margin: 0; }
+.recruitment-rounds { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px; color: var(--muted); }
+.recruitment-rounds > small:first-child { margin-right: 8px; font-size: 13px; }
+.recruitment-rounds > .ant-btn { min-width: 32px; min-height: 34px; height: 34px; padding: 0 8px; font-size: 14px; line-height: 22px; border: 1px solid var(--line); border-radius: 5px; color: var(--muted); background: var(--surface); box-shadow: none; text-align: center; }
+.recruitment-rounds > .ant-btn:is([data-active="true"], [data-completed="true"]) { color: var(--surface); background: var(--brand-700); border-color: var(--brand-700); }
+.recruitment-rounds > .ant-btn:not([data-active="true"]):not([data-completed="true"]):not(:disabled):is(:hover, :focus-visible) { color: var(--brand-800); border-color: var(--brand-700); background: var(--brand-100); }
+.recruitment-rounds > .ant-btn:is([data-active="true"], [data-completed="true"]):not(:disabled):is(:hover, :focus-visible) { color: var(--surface); border-color: var(--brand-800); background: var(--brand-800); }
+@media (min-width: 1000px) {
+  .recruitment-toolbars { display: grid; grid-auto-rows: 1fr; }
+}
+@media (max-width: 999px) {
+  .recruitment-filter-card { grid-template-columns: minmax(0, 1fr) 92px; }
+  .recruitment-filter-grid { grid-column: 1 / -1; grid-row: 2; }
+}
+@media (min-width: 768px) {
+  .recruitment-date-toolbar .ant-btn, .recruitment-filter-card .ant-btn { min-height: 30px; height: 30px; }
+  .recruitment-filter-card .ant-select, .recruitment-filter-card .ant-input-search { height: 30px; }
+  .recruitment-ledger .recruitment-filter-card .recruitment-candidate-search .ant-input-affix-wrapper { padding-block: 3px; }
+}
+@media (max-width: 1199px) {
+  .recruitment-table-scroll-hint { display: block; }
+  .recruitment-candidate-search { grid-column: 1 / -1; }
+}
+@media (min-width: 768px) and (max-width: 1199px) {
+  .recruitment-filter-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 767px) {
+  .recruitment-filter-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .recruitment-date-controls, .recruitment-date-jump { gap: 8px; }
+  .recruitment-stage-options > .ant-btn, .recruitment-rounds > .ant-btn { min-height: 44px; }
+}
+
+@media (max-width: 767px), (pointer: coarse) {
+  .recruitment-filter-card :is(.ant-select, .ant-input-affix-wrapper, .ant-btn) { min-height: 44px; }
+  .recruitment-filter-card .ant-select-clear { top: 0; right: 0; display: grid; place-items: center; width: 44px; height: 44px; margin-top: 0; }
+  .recruitment-candidate-search .ant-input-affix-wrapper { padding-inline-end: 44px; }
+  .recruitment-candidate-search .ant-input-suffix { position: absolute; inset-block: -1px; inset-inline-end: 0; }
+  .recruitment-candidate-search .ant-input-clear-icon { display: grid; place-items: center; width: 44px; height: 100%; }
+}
+
+/* 表格测量行会复制表头复选框，隐藏副本以免进入键盘焦点。 */
+.recruitment-ledger .ant-table-measure-row { visibility: hidden; }
+
+.interview-detail-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-top: 16px; }
+.schedule-recruitment-actions { margin-left: auto; }
+
+@media (min-width: 1200px) {
+  .recruitment-ledger .pipeline-table-card .ant-table-cell { overflow-wrap: anywhere; }
+}

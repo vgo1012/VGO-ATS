@@ -1,0 +1,89 @@
+.app-main:has(> :is(.talent-workspace-page, .pipeline-workspace, .shared-library-page, .onboarded-page)) { padding-top: 12px; }
+.talent-workspace-page { gap: 0; }
+.app-main :is(.talent-workspace-page, .shared-library-page, .onboarded-page) .talent-ledger-card .ant-table-thead > tr > th { padding: 8px 12px; font-size: 12px; }
+.app-main :is(.pipeline-workspace, .shared-library-page, .onboarded-page) > .ledger-heading { flex-shrink: 0; margin-bottom: 14px; }
+.talent-filters {
+  flex-shrink: 0;
+  display: grid;
+  gap: 10px;
+  margin-bottom: 10px;
+  padding: 14px 20px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+.talent-filter-row { display: flex; align-items: center; gap: 20px; min-width: 0; }
+.talent-filter-label { flex: 0 0 80px; color: var(--muted); font-size: 16px; font-weight: 500; }
+.talent-filter-options { display: flex; flex-wrap: wrap; gap: 12px; }
+.talent-filter-options .ant-btn { min-width: 104px; height: 36px; padding-inline: 20px; box-shadow: none; font-size: 15px; }
+.talent-filter-options .ant-btn:first-child { min-width: 96px; }
+.talent-filter-options .ant-btn[aria-pressed="true"] { color: var(--brand-700); background: var(--brand-100); border-color: var(--brand-100); font-weight: 600; }
+.talent-filter-options .ant-btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.talent-filter-bottom:has(.talent-filter-actions [aria-pressed]) { flex-wrap: wrap; }
+.talent-filter-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-left: auto; }
+.talent-filter-actions .ant-btn[aria-pressed="true"] { color: var(--brand-700); border-color: var(--brand-700); font-weight: 600; }
+.talent-filter-actions .ant-btn { min-width: 98px; height: 44px; font-size: 16px; box-shadow: none; }
+.talent-workspace-page .talent-toolbar { gap: 12px; padding: 8px 10px; flex-wrap: wrap; }
+.talent-intake-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; flex-shrink: 0; }
+.talent-workspace-page .talent-bulk-actions { gap: 6px; }
+.talent-workspace-page .talent-bulk-actions > .jd-selector { width: 234px; }
+.talent-workspace-page .talent-bulk-actions > .ant-btn { padding-inline: 10px; }
+:is(.talent-workspace-page, .shared-library-page, .onboarded-page) .talent-ledger-card .ant-table .ant-btn-link { min-height: 22px; height: auto; padding: 0; font-size: 12px; }
+:is(.talent-workspace-page, .shared-library-page, .onboarded-page) .talent-ledger-card .ant-table .talent-identity-cell .table-link { padding-inline: 17px; font-size: 15px; font-weight: 650; }
+/* 保留姓名居中的 17px 对称留白，将绝对定位的性别图标移出姓名边界。 */
+:is(.talent-workspace-page, .shared-library-page, .onboarded-page) .talent-ledger-card .ant-table .talent-identity-cell .table-link > .anticon { inset-inline-end: -1px; }
+:is(.talent-workspace-page, .shared-library-page, .onboarded-page) .talent-contact,
+:is(.talent-workspace-page, .shared-library-page, .onboarded-page) .talent-source-cell,
+:is(.talent-workspace-page, .shared-library-page, .onboarded-page) .talent-updated-cell small { font-size: 12px; }
+:is(.talent-workspace-page, .shared-library-page, .onboarded-page) .talent-ledger-card .talent-skills .ant-tag { padding: 0; background: transparent; font-size: 12px; }
+:is(.talent-workspace-page, .shared-library-page, .onboarded-page) .talent-skills { column-gap: 10px; }
+:is(.talent-workspace-page, .shared-library-page, .onboarded-page) .talent-skills-more { font-size: 12px; }
+:is(.talent-workspace-page, .shared-library-page, .onboarded-page) .talent-skills-more > summary { min-height: 22px; padding-block: 0; }
+:is(.talent-workspace-page, .shared-library-page, .onboarded-page) .talent-ledger-card .ant-table-tbody > tr > td { height: 72px; padding: 8px 12px; font-size: 12px; vertical-align: middle; }
+@media (max-width: 767px) {
+  .talent-workspace-page { overflow: auto; }
+  :is(.shared-library-page, .onboarded-page) .paged-panel { min-height: 760px !important; }
+  :is(.talent-workspace-page, .shared-library-page, .onboarded-page) .talent-ledger-card .ant-table .ant-btn-link,
+  :is(.talent-workspace-page, .shared-library-page, .onboarded-page) .talent-skills-more > summary { min-height: 44px; }
+  .app-main .talent-workspace-page .talent-ledger-card { flex: none; min-height: 480px !important; }
+  .talent-filters { padding: 16px; gap: 16px; }
+  .talent-filter-row { align-items: flex-start; flex-direction: column; gap: 8px; }
+  .talent-filter-label { flex-basis: auto; font-size: 14px; }
+  .talent-filter-options { gap: 8px; }
+  .talent-filter-options .ant-btn, .talent-filter-options .ant-btn:first-child { min-width: 78px; min-height: 44px; padding-inline: 12px; }
+  .talent-filter-actions { margin-top: 4px; }
+}
+
+:is(.shared-library-page, .onboarded-page) { gap: 0; }
+:is(.pipeline-workspace, .shared-library-page, .onboarded-page) > .ledger-heading { align-items: flex-start; }
+:is(.shared-library-page, .onboarded-page) .talent-filters { margin-bottom: 0; }
+.shared-library-toolbar { flex-wrap:wrap; padding:8px 10px; }
+.shared-library-row-actions { display:grid; grid-template-columns:minmax(0,1fr); gap:8px; width:100%; }
+.shared-library-row-actions > .ant-btn { width:100%; }
+.shared-library-toolbar .talent-bulk-actions { gap:6px; }
+.shared-library-toolbar .talent-bulk-actions > .jd-selector { width:234px; }
+.shared-library-toolbar .talent-bulk-actions > .ant-btn { padding-inline:10px; }
+:is(.shared-library-page, .onboarded-page) .shared-library-toolbar > .ant-input-search { max-width:420px; }
+:is(.shared-library-page, .onboarded-page) .ant-table-thead > tr > th:first-child { white-space:nowrap; }
+@media (max-width:1199px) { :is(.shared-library-page, .onboarded-page) .shared-library-toolbar > .ant-input-search { max-width:none; } }
+
+.talent-workspace-page .talent-upload-button { flex-shrink:0; min-width:140px; }
+@media (min-width:768px) {
+  :is(.talent-workspace-page, .shared-library-page, .onboarded-page) .talent-filters { gap:6px; padding-block:8px; }
+  :is(.talent-workspace-page, .shared-library-page, .onboarded-page) .talent-filter-label { font-size:14px; }
+  :is(.talent-workspace-page, .shared-library-page, .onboarded-page) .talent-filter-options .ant-btn,
+  :is(.talent-workspace-page, .shared-library-page, .onboarded-page) .talent-filter-actions .ant-btn { width:104px; min-width:104px; height:30px; min-height:30px; padding-inline:8px; font-size:13px; }
+}
+
+.onboarded-page > .talent-filters { margin-bottom:10px; }
+
+:is(.talent-workspace-page, .shared-library-page, .onboarded-page) .talent-ledger-card .ant-table .ant-table-selection-column { padding-inline: 12px; }
+:is(.talent-workspace-page, .shared-library-page, .onboarded-page) .talent-ledger-card .talent-contact { margin-top: 0; }
+:is(.talent-workspace-page, .shared-library-page, .onboarded-page) .talent-ledger-card .ant-table :is(small, .ant-tag, .ant-btn) { font-size: 12px; }
+:is(.talent-workspace-page, .shared-library-page, .onboarded-page) .talent-ledger-card .ant-table .ant-btn-link:not(:disabled):hover { color: var(--operator); }
+
+/* 短字段固定宽度，剩余空间由技能列承接。 */
+.talent-ledger-card .talent-age-cell { text-align: center; }
+.talent-ledger-card .ant-btn-link { white-space: normal; text-align: left; }
+
+.talent-ledger-card .talent-contact { overflow-wrap: anywhere; }

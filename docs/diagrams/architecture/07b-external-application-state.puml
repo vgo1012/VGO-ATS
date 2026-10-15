@@ -1,0 +1,80 @@
+@startuml
+!include ../theme.puml
+title 外派招聘Application状态机
+
+[*] --> SCREENING
+state "待筛选" as SCREENING
+state "候选人沟通\n（可选，选用时默认电话）" as CONTACT
+state "推送前内部预面（按JD可选）" as INTERVIEW
+state "推送甲方" as READY
+state "甲方AI面试人工记录（可选）" as CLIENT_AI
+state "甲方面试轮次\n（一/二/三面，均可选）" as CLIENT_INTERVIEW
+state "人工招聘决定" as DECISION
+state "Offer流程" as OFFER
+state "待入职" as ONBOARD
+state "已入职" as HIRED
+state "未通过" as REJECTED
+state "候选人退出" as WITHDRAWN
+
+SCREENING --> CONTACT : HR为候选人选择沟通
+SCREENING --> INTERVIEW : 未选沟通，选择内部预面
+SCREENING --> READY : 沟通/内部预面均未选
+CONTACT --> INTERVIEW : HR选择内部预面
+CONTACT --> READY : HR未选择内部预面
+INTERVIEW --> READY : 内部评估通过
+READY --> CLIENT_AI : 精确推荐匹配且deliveryStatus=SENT，选择甲方AI面试
+READY --> CLIENT_INTERVIEW : 精确推荐匹配且deliveryStatus=SENT，选择甲方面试
+READY --> DECISION : 精确推荐匹配且deliveryStatus=SENT，甲方直接通过
+CLIENT_AI --> CLIENT_INTERVIEW : HR选择后续甲方面试
+CLIENT_AI --> DECISION : HR未选择后续面试
+CLIENT_AI --> DECISION : 带原因撤回，当前步骤WITHDRAWN后重新选路
+CLIENT_INTERVIEW --> CLIENT_INTERVIEW : HR选择下一轮
+CLIENT_INTERVIEW --> DECISION : 面试流程结束
+CLIENT_INTERVIEW --> DECISION : 带原因撤回，当前步骤WITHDRAWN后重新选路
+DECISION --> OFFER : 人工PASS决定
+OFFER --> ONBOARD : 记录已发出后确认真实入职
+ONBOARD --> HIRED : 确认入职
+HIRED --> [*]
+
+SCREENING --> REJECTED : 人工REJECT决定
+CONTACT --> WITHDRAWN : 人工WITHDRAW决定
+CLIENT_AI --> REJECTED : 普通拒绝并记录人工REJECT决定
+CLIENT_INTERVIEW --> REJECTED : 普通拒绝并记录人工REJECT决定
+DECISION --> REJECTED : 人工REJECT决定
+DECISION --> WITHDRAWN : 人工WITHDRAW决定
+REJECTED --> [*]
+WITHDRAWN --> [*]
+REJECTED --> OFFER : Offer终止后重新开启
+WITHDRAWN --> OFFER : Offer终止后重新开启
+
+note right of CLIENT_AI
+甲方AI面试是客户侧流程节点；
+仅由HR人工记录外部反馈来源，
+本系统不接入、不执行、不判断、不负责结果。
+end note
+
+note left of CLIENT_INTERVIEW
+Application固化创建时的JD/流程模板版本；
+只有流程模板和正式评分配置均ACTIVE才可创建；
+模板只定义允许步骤，HR按候选人选择实际路径；
+未采用步骤为NOT_SELECTED且无待办/deadline；
+实际步骤要求负责人、截止时间、有效跟进和结果；
+甲方侧步骤或直接PASS必须精确绑定同一匹配且deliveryStatus=SENT的推荐；
+普通拒绝不创建限制，明确禁推才由HR另行创建。
+拒绝页只有勾选明确禁推且原因/来源完整才创建限制；
+甲方侧撤回后原推荐失效，仍须HR重新选路并提交人工决定。
+end note
+
+note right of DECISION
+每条Application必须保存人工决定、原因、操作者和时间；
+决定更正只追加，Offer/终止后须先重新开启；
+只有PASS可进入Offer。
+end note
+
+note right of OFFER
+Offer 日常状态为处理中、已发出；未开始是系统初态。
+默认直接记录已发出，已发出直接确认真实入职；谈薪/审批均归“处理中”。
+已接受仅兼容历史只读，更正/重新开启只追加历史。
+Application恢复仅限由Offer终止产生的结果且原因必填。
+end note
+@enduml

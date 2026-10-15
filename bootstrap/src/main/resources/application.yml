@@ -1,0 +1,378 @@
+# 公共运行配置：这里只保留所有环境一致的设置；未指定 Profile 时使用当前开发环境。
+spring:
+  profiles:
+    default: dev
+  # 未显式配置模型供应商时关闭全部 Spring AI 模型自动装配。
+  ai:
+    model:
+      chat: none
+      embedding: none
+      image: none
+      moderation: none
+      audio:
+        speech: none
+        transcription: none
+  # 登录会话保存到 MySQL；表结构由项目 SQL 基线统一维护。
+  session:
+    # 连续 48 小时未访问才过期；有效请求续期，退出登录或撤销会话仍立即失效。
+    timeout: 48h
+    jdbc:
+      initialize-schema: never
+  # 应用标识会出现在日志、指标和 Actuator 信息中。
+  application:
+    name: hr-platform
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
+  # 启动时校验并执行统一维护的数据库迁移。
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    validate-migration-naming: true
+    # 禁止旧制品忽略数据库中已执行但运行资源遗漏的迁移，结构不兼容时在 Worker 启动前失败。
+    ignore-migration-patterns: []
+  mvc:
+    problemdetails:
+      enabled: true
+  servlet:
+    multipart:
+      # 单文件与简历上限一致；月报含两份 Excel，请求另预留元数据开销。
+      max-file-size: 10MB
+      max-request-size: 21MB
+
+# MyBatis-Plus 的全局映射与安全更新策略。
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    default-enum-type-handler: org.apache.ibatis.type.EnumTypeHandler
+  global-config:
+    banner: false
+    db-config:
+      update-strategy: not_null
+
+# 复合主键由数据库约束和显式条件共同保护；MyBatis-Plus 不支持复合 @TableId，相关一致性由契约测试校验。
+logging:
+  # 应用文件独立滚动；部署平台收集的控制台日志还需单独配置保留策略。
+  file:
+    name: logs/hr-ai.log
+  logback:
+    rollingpolicy:
+      max-file-size: 20MB
+      max-history: 14
+      total-size-cap: 1GB
+      clean-history-on-start: true
+  # 只输出受控关联字段；不得用整个 MDC 映射替代，避免附带私人上下文。
+  pattern:
+    level: '%5p [traceId=%X{traceId} taskId=%X{taskId} taskType=%X{taskType} attemptNo=%X{attemptNo}]'
+  level:
+    com.baomidou.mybatisplus.core.metadata.TableInfoHelper: error
+    com.baomidou.mybatisplus.core.injector.DefaultSqlInjector: error
+    # 部分候选人 PDF 未嵌入标准或 TrueType 字体时，PDFBox 会自动选择已安装的替代字体；降噪不影响文本提取失败的业务告警。
+    org.apache.pdfbox.pdmodel.font.PDType1Font: error
+    org.apache.pdfbox.pdmodel.font.PDCIDFontType2: error
+    org.apache.pdfbox.pdmodel.font.PDTrueTypeFont: error
+
+# HTTP 服务端口及优雅停机配置。
+server:
+  port: 8080
+  shutdown: graceful
+
+# 只公开健康检查与基本信息，并启用容器探针状态。
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      group:
+        readiness:
+          # 数据库断连时实例不可承接登录、会话或业务请求；恢复后由连接池自动重新加入服务。
+          include: readinessState,db
+      show-details: never
+  health:
+    readinessstate:
+      enabled: true
+    livenessstate:
+      enabled: true
+
+# 开发默认开放 OpenAPI JSON；生产 Profile 必须另行显式关闭。
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+
+# HR 平台公共配置。
+hr:
+  mail-resume:
+    # 单一公共邮箱简历采集默认关闭；生产凭据必须由部署平台外部注入。
+    enabled: false
+    # 更换邮箱账号或文件夹时必须更换稳定键，避免复用旧 UID 游标。
+    mailbox-key: public-resume
+    host: ""
+    port: 993
+    username: ""
+    password: ""
+    folder: INBOX
+    # 邮件简历默认使用内置 BOSS直聘渠道；该渠道须保持启用。
+    source-channel-id: "00000000000000000000000001"
+    # 旧 UID 采集每轮最多处理的邮件数和扫描页数；积压从已提交游标跨轮续读。
+    batch-size: 50
+    connect-timeout: 10s
+    read-timeout: 30s
+    write-timeout: 30s
+  identity:
+    login-alias:
+      # 内置管理员可在生产 Secret 中映射 admin 登录别名；留空时只接受工作邮箱。
+      admin-work-email: ""
+    login-protection:
+      # 普通账号 15 分钟内累计失败 5 次，临时锁定 15 分钟；管理员重置凭据会清除锁定。
+      # 初始化管理员或其撤权后的在用超管接替者仍受网关限流和失败审计，不接受外部触发的账号硬锁。
+      max-failures: 5
+      failure-window: 15m
+      lock-duration: 15m
+  wecom:
+    # 企业微信只读拉取开关；目录落库另由 sync.enabled 控制，不开户、改权限或发送通知。
+    directory-enabled: false
+    # 部署平台通过外部配置或 Spring 环境覆盖注入真实凭据；留空不阻断应用启动。
+    corp-id: ""
+    secret: ""
+    # 单次 HTTP 与整个预览的秒级时限；成功、失败均冷却，避免白名单未配置时重复请求。
+    request-timeout-seconds: 5
+    preview-timeout-seconds: 900
+    cooldown-seconds: 60
+    # 超过保护上限整次失败，不以截断目录作为完整同步结果。
+    max-departments: 1000
+    max-members: 10000
+    collaboration:
+      # 恢复线程默认运行但新建默认关闭；关闭新建后仍会更新/取消既有远端对象。
+      enabled: false
+      worker-enabled: true
+      # 自建应用 agentId；普通日程创建需要，未配置时新建普通日程会明确失败。
+      agent-id: 0
+      # 可选的应用日历 ID；留空时写入参与人的默认日历。
+      calendar-id: ""
+      # 毫秒；持久化投影轮询在独立 outbox 线程池执行。
+      initial-delay: 5000
+      poll-delay: 2000
+    sync:
+      # 先执行目录同步升级并确认白名单后启用；每日与手动复用同一发布流程。
+      enabled: false
+      cron: "0 0 2 * * *"
+      scope-version: initial
+      # 毫秒；只恢复已提交批次，不每次重新拉取远端。
+      recovery-delay: 600000
+      # 秒；租约必须覆盖最长1800秒远端读取及本地发布，失效批次拒绝迟到写入。
+      lease-seconds: 2100
+      cooldown-seconds: 60
+      # 可见人员减少达到百分比阈值时整批拒绝，保留上次目录。
+      max-member-drop-percent: 20
+  resume-lifecycle:
+    # 已移除待处置与超时自动共享；未处理简历持续保留待筛选，历史流转事实仍保留。
+    enabled: false
+    # 保留历史流转配置兼容性；关闭状态下不创建或推进自动周期。
+    batch-size: 200
+  resume-intake:
+    # 先部署收件处理升级 SQL 再启用；只在专用 AI 线程池解析，轮询单位为毫秒。
+    worker-enabled: true
+    initial-delay: 5000
+    poll-delay: 2000
+  object-storage:
+    # MinIO 连接及单次读写等待上限；local 模式不发起网络调用。
+    connect-timeout: 2s
+    read-timeout: 30s
+    write-timeout: 30s
+    # 单次 S3 HTTP 请求（含完整响应体）最多两分钟；分片上传逐片计时，并非整文件截止。
+    request-timeout: 2m
+  malware-scan:
+    # INSTREAM 整个文件发送阶段最多等待两分钟；扫描端停止接收时关闭连接并按失败处理。
+    write-timeout: 2m
+  document-extraction:
+    # 先在打开 PDF 后校验页数，避免超长文档触发无界 OCR/多模态调用。
+    maximum-pages: 100
+    # 原生解析、OCR 和多模态输出统一受此总字符数限制，避免压缩文档或异常响应放大堆内存。
+    maximum-extracted-characters: 500000
+    # DOCX 在交给 POI 前预检解压总量和 ZIP 条目数，PDF 使用独立预算。
+    maximum-container-expanded-bytes: 67108864
+    maximum-container-entries: 4096
+    # 兼容字体拆分较多的 PDF；共享引用去重后按单文档累计，不能取消有限边界。
+    maximum-pdf-resource-nodes: 65536
+    # PDF 展开预算含原图栅格预留，并非 JVM 峰值内存；原图在需要渲染时才校验。
+    maximum-pdf-expanded-bytes: 268435456
+    maximum-source-image-pixels: 32000000
+    maximum-source-image-dimension: 20000
+    # 仅在原生文本质量不足时优先按 150 DPI 渲染；超出总像素预算时按页自适应降到不低于 72 DPI，单边仍执行硬上限。
+    render-dpi: 150
+    maximum-rendered-page-pixels: 8000000
+    maximum-rendered-page-dimension: 10000
+    # 低于该字符数或可打印字符比例的页面才进入 OCR/多模态回退。
+    minimum-page-characters: 40
+    minimum-printable-ratio: 0.80
+  # 初始超级管理员默认不自动创建，启用时需显式填写邮箱和初始密码。
+  bootstrap-admin:
+    enabled: false
+    department-code: ROOT
+    department-name: 总部
+    display-name: 系统管理员
+    work-email: ""
+    password: ""
+  runtime:
+    required-modules:
+      - identity
+      - talent
+      - recruiting
+      - intelligence
+      - integration
+      - reporting
+  messaging:
+    # 默认不连接 Broker；启用前配置 RabbitMQ，投递意图会先保留在 MySQL 中。
+    mode: disabled
+    worker-enabled: false
+    consumer-enabled: false
+    # 毫秒；轮询只向独立发布线程池提交合并后的触发。
+    initial-delay: 3000
+    poll-delay: 1000
+    # 启用时必须显式配置主机和凭据；以下空值不连接任何默认 Broker。
+    host: ""
+    port: 5672
+    virtual-host: /
+    username: ""
+    password: ""
+    # 生产环境启用 TLS，使用 JVM 信任库和主机名校验。
+    ssl-enabled: false
+    exchange: hr.task.events
+    # 搜索保持独立队列；其他持久任务只接收唤醒通知，业务事实和恢复仍以 MySQL 为准。
+    search-queue: hr.search.project
+    worker-queue: hr.task.notify
+    worker-routing-keys:
+      - RESUME_PARSE
+      - RESUME_INTAKE_PARSE
+      - RESUME_INTAKE_COMPLETE
+      - RESUME_INTAKE_ADOPT
+      - JD_PARSE
+      - MATCH_RUN
+      - SEARCH_INDEX_REBUILD
+      - MONTHLY_REPORT_VALIDATE
+      - MONTHLY_RECRUITMENT_REPORT
+    # 超时单位为毫秒，心跳单位为秒；消息仅含任务引用，不包含业务正文。
+    connection-timeout-millis: 5000
+    channel-rpc-timeout-millis: 5000
+    confirm-timeout-millis: 10000
+    heartbeat-seconds: 30
+    maximum-message-bytes: 8192
+  reporting:
+    monthly-report:
+      # 固定规则报表不调用模型；解析和 Word 生成使用独立有界线程池。
+      enabled: true
+      # 毫秒；这里只唤醒内存调度，空队列退避到60秒，新任务提交后主动唤醒。
+      initial-delay: 5000
+      poll-delay: 5000
+      # 中断上传超过30分钟才恢复；与过期文件删除分开，避免清理降频拖慢恢复。
+      recovery-initial-delay: 1m
+      recovery-delay: 5m
+      cleanup-initial-delay: 5m
+      cleanup-delay: 1h
+      max-file-bytes: 10485760 # 单份 10 MiB，与 HTTP 上传限制一致。
+      max-rows: 100000
+      max-groups: 300 # 每维度超过上限明确报错，不截断领导汇报。
+      retention-days: 90 # 原件和成品90天后清理，报告摘要与审计仍保留。
+      max-attempts: 3
+      max-active-reports: 10
+    metric-capture:
+      # 报表读取不再触发写入；首次历史扫描完成前返回可恢复的初始化状态。
+      enabled: true
+      initial-delay: 5s
+      poll-delay: 30s
+      batch-size: 500
+      # 每周期固定来源上界，循环补采迟到事务和后续满足条件的历史来源。
+      reconciliation-initial-delay: 1m
+      reconciliation-delay: 10m
+      reconciliation-batch-size: 500
+      # 完整增量周期水位超过此时长，仍提供已有数据并明确标注滞后。
+      stale-after: 5m
+    async-task:
+      # 任务处理期间由进度写入续约；需大于外部调用的常规超时，进程崩溃后由其他实例恢复。
+      lease-duration: 5m
+    audit-capture:
+      # 日常工作区已移除审计看板，默认停止重复采集；各业务模块的原始操作记录继续保留。
+      # 需要专门排查时可显式启用，按有界批次补采历史记录。
+      enabled: false
+      initial-delay: 5s
+      poll-delay: 3s
+      batch-size: 500
+      # 低频循环校对用于追回 ID 较小但事务较晚提交的来源事件。
+      reconciliation-initial-delay: 1m
+      reconciliation-delay: 1m
+      reconciliation-batch-size: 200
+  search:
+    # 旧索引回收需先登记归属；未知创建/删除失败占容量，不能无限追加新目标。
+    retention:
+      enabled: true
+      retain-count: 2
+      max-live-resources: 8
+      max-unresolved-creates: 1
+      batch-size: 5 # 每轮远端删除尝试数，失败也计入
+      minimum-age: 10m
+      request-budget: 2m # 单公开请求所有页及完整 ES 响应体的总保护预算
+      initial-delay: 60000
+      poll-delay: 60000
+  # 单体内各类异步任务使用独立有界线程池，避免相互挤占资源。
+  executors:
+    scheduler-size: 4
+    shutdown-await: 30s
+    ai:
+      # 公共/开发默认固定13槽，其中JD解析可同时执行10项；继续扩容前需核对模型限流、CPU与扫描页内存。
+      core-size: 13
+      max-size: 13
+      queue-capacity: 32
+    # 三类慢模型调用共享同一有界池，但分别保留槽位，避免批量简历长期阻塞 JD 或收件处理。
+    ai-workload-slots:
+      resume-parse: 2
+      intake-parse: 1
+      jd-parse: 10
+    matching:
+      core-size: 1
+      max-size: 2
+      queue-capacity: 16
+    search:
+      # 增量/状态回放与全量重建各占一个执行槽，避免重建期间新事实延迟可见。
+      core-size: 2
+      max-size: 2
+      queue-capacity: 8
+    maintenance:
+      core-size: 1
+      max-size: 1
+      queue-capacity: 8
+    reporting:
+      # 限制同时解析/渲染的内存占用，避免挤占招聘在线请求。
+      core-size: 1
+      max-size: 1
+      queue-capacity: 2
+    directory:
+      # 外部通讯录全量读取可能较慢，独立有界线程池不占用在线请求与维护任务。
+      core-size: 1
+      max-size: 1
+      queue-capacity: 1
+    mail:
+      # 邮箱读取与附件扫描使用独立有界线程池，慢邮件不会阻塞维护任务。
+      core-size: 1
+      max-size: 1
+      queue-capacity: 1
+    outbox:
+      # 两个发布槽并行等待独立Confirm；每槽仍逐条领取，消息仅作幂等唤醒且不依赖发布顺序。
+      core-size: 2
+      max-size: 2
+      queue-capacity: 4
+    broker-io:
+      core-size: 1
+      max-size: 1
+      queue-capacity: 4
+    broker-callbacks:
+      core-size: 2
+      max-size: 2
+      queue-capacity: 32
+    broker-consumers:
+      core-size: 1
+      max-size: 1
+      queue-capacity: 4

@@ -1,0 +1,14 @@
+[Unit]
+Description=Check VGO public HTTPS health endpoint and notify by email
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/vgo-health-check
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ReadOnlyPaths=/opt/vgo/shared
+StateDirectory=vgo-monitor

@@ -1,0 +1,14 @@
+[Unit]
+Description=Create a consistent local MySQL backup for VGO
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/vgo-mysql-backup
+TimeoutStartSec=10min
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ReadWritePaths=/opt/vgo/shared/backups/mysql-hourly

@@ -1,0 +1,8 @@
+interface:
+  display_name: "HR AI 后端开发"
+  short_description: "按招聘领域架构实现 Java、AI、异步与数据能力"
+  brand_color: "#145962"
+  default_prompt: "Use $hr-ai-backend-development to implement a verified backend vertical slice for the HR AI recruitment system."
+
+policy:
+  allow_implicit_invocation: true

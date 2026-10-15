@@ -1,0 +1,298 @@
+@startuml
+!include ../theme.puml
+title 核心领域模型
+hide methods
+skinparam classAttributeIconSize 0
+
+class "候选人\nCandidate" as Candidate {
+  id
+  lifecycleStatus
+  dataStewardUserId
+}
+class "身份线索\nCandidateIdentity" as Identity {
+  type
+  normalizedHash
+  confidence
+}
+class "逻辑简历\nResume" as Resume {
+  id
+  profileName
+}
+class "团队共享收件记录\nResumeIntake" as Intake {
+  sourceRecruiterUserId
+  defaultOwnerUserId
+  handledByUserId
+  sourceChannel
+  sourceAccount
+  status
+}
+class "简历版本\nResumeVersion" as ResumeVersion {
+  id
+  storageBackend
+  objectKey
+  contentHash
+}
+class "解析快照\nResumeParseSnapshot" as ParseSnapshot {
+  schemaVersion
+  status
+  factsJson
+  evidenceJson
+}
+class "招聘需求\nRecruitmentDemand" as Demand {
+  type
+  status
+  ownerUserId
+}
+class "JD版本\nJDVersion" as JDVersion {
+  versionNo
+  rawContent
+  structuredJson
+}
+class "JD匹配方案版本\nJdMatchPlanVersion" as MatchPlanVersion {
+  versionNo
+  status: DRAFT/ACTIVE/SUPERSEDED
+  configuredByUserId
+  ruleFingerprint
+}
+class "JD流程模板版本\nWorkflowTemplateVersion" as WorkflowTemplateVersion {
+  versionNo
+  recruitmentType
+  status: DRAFT/ACTIVE/SUPERSEDED
+}
+class "流程步骤定义\nWorkflowStepDefinition" as WorkflowStepDefinition {
+  stepCode
+  sequenceNo
+  candidateOptional
+  overduePolicyCode
+}
+class "五维权重版本\nWeightProfileVersion" as WeightProfileVersion {
+  ownerUserId
+  versionNo
+}
+class "官方条件方案版本\nControlledCriterionPlanVersion" as CriterionPlanVersion {
+  versionNo
+  planMaxBonusPoints <= 30
+  configuredByUserId
+}
+class "筛选模板版本\nFilterTemplateVersion" as FilterTemplate {
+  ownerType
+  ownerId
+  versionNo
+  queryDslJson
+}
+class "应聘记录\nApplication" as Application {
+  currentStage
+  currentWorkflowStepId
+  workflowTemplateVersionId
+  outcome
+  currentOfferStatus
+  ownerUserId
+  ownerDepartmentId
+}
+class "流程步骤实例\nApplicationWorkflowStep" as ApplicationWorkflowStep {
+  stepCode
+  sequenceNo
+  status: AVAILABLE/NOT_SELECTED/活动态/终态
+  selectedByUserId
+  selectedAt
+  clientSubmissionId
+  ownerUserId
+  dueAt
+}
+class "步骤跟进记录\nWorkflowFollowUpRecord" as WorkflowFollowUpRecord {
+  channel
+  occurredAt
+  outcomeCode
+  nextActionAt
+}
+class "人工招聘决定\nRecruitmentDecisionRecord" as RecruitmentDecisionRecord {
+  recordType: DECISION/CORRECTION
+  decision: PASS/REJECT/WITHDRAW
+  clientSubmissionId
+  correctsRecordId
+  decidedByUserId
+  decidedAt
+  reason
+}
+class "路径选择变更\nWorkflowPathChangeRecord" as WorkflowPathChangeRecord {
+  changeType: SELECTION/AMENDMENT
+  fromStepId
+  toStepId
+  reason
+  changedByUserId
+  occurredAt
+}
+class "Offer状态记录\nOfferStatusRecord" as OfferStatusRecord {
+  recordType
+  status: 日常两态 + 终止/入职/历史兼容
+  terminationReason
+  sourceStatusRaw
+  occurredAt
+  correctsRecordId
+  reopensRecordId
+}
+class "入职事件\nOnboardingEvent" as OnboardingEvent {
+  onboardedAt
+  source
+  sourceReference
+}
+class "候选人跟进锁\nCandidateEngagementLock" as Lock {
+  ownerUserId
+  ownerDepartmentId
+  expiresAt
+  lastProgressAt
+  status
+}
+class "所属历史\nOwnershipHistory" as Ownership {
+  objectType
+  objectId
+  fromUserId
+  toUserId
+  changedAt
+}
+class "内推记录\nReferralRecord" as Referral {
+  referrerName
+  referrerUserId
+  referredAt
+  sourceChannel
+}
+class "面试\nInterview" as Interview {
+  roundNo
+  status
+  scheduledAt
+}
+class "正式面评\nInterviewFeedback" as Feedback {
+  status
+  conclusion
+  sharedEvaluation
+}
+class "客户推荐\nClientSubmission" as Submission {
+  applicationId
+  clientId
+  jdVersionId
+  resumeVersionId
+  deliveryStatus
+  processStatus
+  sentAt
+  receiver
+}
+class "公司黑名单记录\nCompanyBlacklistRecord" as CompanyBlacklist {
+  status
+  reasonCode
+  correctsRecordId
+  occurredAt
+}
+class "甲方限制\nClientRestriction" as ClientRestriction {
+  clientId
+  status
+  reasonCode
+  expiresAt: null=永久
+  correctsRecordId
+}
+class "学历核验/补充\nEducationVerificationRecord" as EducationVerification {
+  verificationStatus
+  studyMode
+  evidenceReference
+  correctsRecordId
+}
+class "交接批次\nHandoverBatch" as HandoverBatch {
+  sourceUserId
+  targetUserId
+  status
+  unresolvedCount
+}
+
+Candidate "1" -- "0..*" Identity
+Candidate "1" -- "0..*" Resume
+Intake "0..*" --> "0..1" Candidate : 确认入库后关联
+Intake "0..*" --> "0..1" ResumeVersion : 处理结果
+Resume "1" -- "1..*" ResumeVersion
+ResumeVersion "1" -- "0..*" ParseSnapshot
+Demand "1" -- "1..*" JDVersion
+JDVersion "1" -- "1..*" WorkflowTemplateVersion
+WorkflowTemplateVersion "1" -- "1..*" WorkflowStepDefinition
+JDVersion "1" -- "1..*" MatchPlanVersion
+MatchPlanVersion "1" --> "1" CriterionPlanVersion
+Demand ..> FilterTemplate : 执行时引用版本
+Candidate "1" -- "0..*" Application
+Candidate "1" -- "0..*" Lock
+Candidate "1" -- "0..*" Referral
+Demand "1" -- "0..*" Application
+Application "1" --> "1" WorkflowTemplateVersion : 创建时固化
+Application "1" -- "1..*" ApplicationWorkflowStep
+ApplicationWorkflowStep "1" --> "1" WorkflowStepDefinition
+ApplicationWorkflowStep "1" -- "0..*" WorkflowFollowUpRecord : 只追加
+Application "1" -- "0..*" WorkflowPathChangeRecord : 选路/修改只追加
+Application "1" -- "0..*" RecruitmentDecisionRecord : 进入Offer/终止前必需
+Application "1" -- "0..*" Ownership : 转交追加
+Application "1" -- "1..*" OfferStatusRecord : 只追加
+Application "1" -- "0..1" OnboardingEvent : 真实入职
+Application "1" -- "0..*" Interview
+Interview "1" -- "0..*" Feedback
+Application "1" -- "0..*" Submission
+Submission "1" --> "1" ResumeVersion : 发送快照
+ApplicationWorkflowStep "0..*" --> "0..1" Submission : 甲方步骤精确绑定
+RecruitmentDecisionRecord "0..*" --> "0..1" Submission : 外派PASS精确绑定
+Candidate "1" -- "0..*" CompanyBlacklist
+Candidate "1" -- "0..*" ClientRestriction
+Submission "0..1" --> "0..*" ClientRestriction : 明确禁推时HR创建
+Candidate "1" -- "0..*" EducationVerification
+Application "0..1" --> "0..*" EducationVerification : HR核验/补充
+HandoverBatch "1" ..> "0..*" Ownership : 一键交接逐项追加
+
+note right of Candidate
+候选人不保存“淘汰/录用”全局状态；
+候选人和简历是公司共享资产，
+结果与所属人属于具体Application。
+end note
+
+note left of Intake
+邮件/上传待处理记录由招聘团队共享；
+来源招聘人、默认所属人和实际处理人分别留痕。
+end note
+
+note right of CompanyBlacklist
+正式黑名单只设公司级；
+普通HR可新增/更正/停用，任何角色不可删除；
+生效后立即阻断联系、新建应聘、推荐和推进；
+部门意见仅作内部备注。
+end note
+
+note right of ClientRestriction
+默认永久且只影响对应甲方；
+普通拒绝不创建，明确禁推才由HR创建；
+甲方A不阻断甲方B；更正只追加。
+end note
+
+note right of EducationVerification
+HR可补充全日制/非全日制/函授等学习形式；
+AI无明确证据时保持UNKNOWN；仅作标签，绝不影响评分。
+end note
+
+note right of MatchPlanVersion
+仅SUPER_ADMIN持有人维护；同一JD版本最多一个ACTIVE；
+HR不维护条件草稿，个人权重只参与派生排序。
+end note
+
+note right of OfferStatusRecord
+未开始为系统初态；日常为处理中/已发出；
+已终止/已入职为独立事实；已接受仅历史只读兼容。
+终止原因必填；更正/重新开启指向原记录且不覆盖历史。
+end note
+
+note left of WorkflowTemplateVersion
+按确定JD版本配置允许步骤和顺序；
+候选人沟通可为零或一条，存在时默认电话；
+零轮/一面/二面/三面均合法，DECISION恰好一条；
+客户步骤仅外派可用且ClientSubmission必须排在其前；
+新模板不改变已创建Application。
+end note
+
+note right of ApplicationWorkflowStep
+HR按候选人选择模板允许的实际路径；未采用步骤为NOT_SELECTED，
+无待办/deadline；实际步骤须有负责人、时限、跟进和结果。
+未开始选择可带原因修改；已开始步骤须WITHDRAWN后再选路。
+外派甲方步骤及PASS精确绑定匹配、deliveryStatus=SENT且sentAt非空的ClientSubmission；
+甲方处理状态不覆盖发送事实，撤回后不可继续使用。
+end note
+@enduml

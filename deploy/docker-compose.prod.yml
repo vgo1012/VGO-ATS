@@ -1,0 +1,211 @@
+x-static-web: &static-web
+  restart: unless-stopped
+  volumes:
+    - web_build_assets:/usr/share/nginx/html/_build:ro
+    - web_sockets:/run/web-sockets
+  healthcheck:
+    test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1/healthz"]
+    interval: 15s
+    timeout: 5s
+    retries: 10
+    start_period: 15s
+  logging: &default-logging
+    driver: local
+    options:
+      max-size: 20m
+      max-file: "5"
+
+services:
+  mysql:
+    image: ${DOCKER_HUB_MIRROR:-docker.m.daocloud.io}/library/mysql:8.4.11@sha256:85b9bf2e29cf836ecb8c2a15a935d4ba0c606631dff1dd79531a11983c638f2a
+    restart: unless-stopped
+    environment:
+      TZ: Asia/Shanghai
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?MYSQL_ROOT_PASSWORD is required}
+      MYSQL_DATABASE: hr_ai
+      MYSQL_USER: hr_app
+      MYSQL_PASSWORD: ${HR_DB_PASSWORD:?HR_DB_PASSWORD is required}
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_0900_ai_ci
+      - --default-time-zone=+08:00
+      - --slow-query-log=ON
+      - --long-query-time=2
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+    logging: *default-logging
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.19.21@sha256:cbf5cd6cfe5532a9c02d510c66d238bf329cd51fe3d57170a2a880aca7d47419
+    restart: unless-stopped
+    environment:
+      discovery.type: single-node
+      xpack.security.enabled: "true"
+      xpack.security.autoconfiguration.enabled: "false"
+      xpack.security.http.ssl.enabled: "false"
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:?ELASTIC_PASSWORD is required}
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    mem_limit: 3g
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65535
+        hard: 65535
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS -u elastic:$$ELASTIC_PASSWORD 'http://127.0.0.1:9200/_cluster/health?wait_for_status=yellow&timeout=5s' >/dev/null"]
+      interval: 15s
+      timeout: 10s
+      retries: 30
+      start_period: 90s
+    logging: *default-logging
+
+  rabbitmq:
+    image: ${DOCKER_HUB_MIRROR:-docker.m.daocloud.io}/library/rabbitmq:4.3.6-management@sha256:de62d9901fb73aaa8767b9c1e9ea32f2938f69d1b83e430f7c5ca854081d2128
+    hostname: rabbitmq
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: ${HR_RABBITMQ_USERNAME:?HR_RABBITMQ_USERNAME is required}
+      RABBITMQ_DEFAULT_PASS: ${HR_RABBITMQ_PASSWORD:?HR_RABBITMQ_PASSWORD is required}
+      RABBITMQ_DEFAULT_VHOST: /
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    mem_limit: 1g
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+    logging: *default-logging
+
+  clamav:
+    image: ${CLAMAV_REGISTRY_MIRROR:-docker.1ms.run}/clamav/clamav:1.4.6-debian13-slim@sha256:2463487b937071421c0ddadac6616111bedba45b9bd9312bbb4591b57450f8f4
+    restart: unless-stopped
+    mem_limit: 4g
+    logging: *default-logging
+
+  backend:
+    image: vgo-backend:${RELEASE_ID:?RELEASE_ID is required}
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      TZ: Asia/Shanghai
+      SPRING_PROFILES_ACTIVE: prod,oss
+      HR_OSS_ENDPOINT: ${HR_OSS_ENDPOINT:?HR_OSS_ENDPOINT is required}
+      HR_OSS_REGION: ${HR_OSS_REGION:?HR_OSS_REGION is required}
+      HR_OSS_BUCKET: ${HR_OSS_BUCKET:?HR_OSS_BUCKET is required}
+      HR_OSS_ROLE_NAME: ${HR_OSS_ROLE_NAME:?HR_OSS_ROLE_NAME is required}
+      HR_OSS_LEGACY_MINIO_FALLBACK: "false"
+      HR_MESSAGING_USERNAME: ${HR_RABBITMQ_USERNAME:?HR_RABBITMQ_USERNAME is required}
+      HR_MESSAGING_PASSWORD: ${HR_RABBITMQ_PASSWORD:?HR_RABBITMQ_PASSWORD is required}
+      JAVA_TOOL_OPTIONS: -XX:MaxRAMPercentage=70 -XX:+ExitOnOutOfMemoryError -Dfile.encoding=UTF-8
+    volumes:
+      - /opt/vgo/shared/application-prod-secrets.yml:/run/secrets/application-prod-secrets.yml:ro
+      - application_logs:/app/logs
+    mem_limit: 3g
+    depends_on:
+      mysql:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      clamav:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8080/actuator/health/readiness"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 60s
+    logging: *default-logging
+
+  web-blue:
+    <<: *static-web
+    image: vgo-web:${WEB_BLUE_RELEASE_ID:?WEB_BLUE_RELEASE_ID is required}
+    build:
+      context: ..
+      dockerfile: ui/Dockerfile
+    environment:
+      WEB_SLOT: blue
+  web-green:
+    <<: *static-web
+    image: vgo-web:${WEB_GREEN_RELEASE_ID:?WEB_GREEN_RELEASE_ID is required}
+    build:
+      context: ..
+      dockerfile: ui/Dockerfile
+    environment:
+      WEB_SLOT: green
+
+  edge:
+    image: ${DOCKER_HUB_MIRROR:-docker.m.daocloud.io}/library/nginx:1.28.3-alpine@sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - certbot_etc:/etc/letsencrypt:ro
+      - certbot_www:/var/www/certbot:ro
+      - /opt/vgo/shared/edge:/etc/nginx/conf.d:ro
+      - web_sockets:/run/web-sockets:ro
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z 127.0.0.1 443"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+    logging: *default-logging
+
+  certbot:
+    image: ${DOCKER_HUB_MIRROR:-docker.m.daocloud.io}/certbot/certbot:v5.8.0@sha256:f70ad0adbb7e117f0fe42a63c553f28ea451edabc0148757b6efcd9735acaa20
+    profiles: ["certbot"]
+    ports:
+      - "80:80"
+    volumes:
+      - certbot_etc:/etc/letsencrypt
+      - certbot_www:/var/www/certbot
+    command:
+      - certonly
+      - --standalone
+      - --non-interactive
+      - --agree-tos
+      - --no-eff-email
+      - --email=${LETSENCRYPT_EMAIL:?LETSENCRYPT_EMAIL is required}
+      - --cert-name=www.vgo.example.org
+      - -d
+      - www.vgo.example.org
+      - -d
+      - vgo.example.org
+
+volumes:
+  mysql_data:
+    name: vgo_mysql_data
+  elasticsearch_data:
+    name: vgo_elasticsearch_data
+  rabbitmq_data:
+    name: vgo_rabbitmq_data
+  application_logs:
+    name: vgo_application_logs
+  certbot_etc:
+    name: vgo_certbot_etc
+  certbot_www:
+    name: vgo_certbot_www
+  web_build_assets:
+    name: vgo_web_build_assets
+  web_sockets:
+    name: vgo_web_sockets

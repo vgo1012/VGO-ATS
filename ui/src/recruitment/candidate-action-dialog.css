@@ -1,0 +1,4 @@
+.candidate-action-content { display: flex; flex-direction: column; gap: 16px; }
+.candidate-action-dialog .ant-input-textarea-show-count { margin-bottom: 6px; }
+.candidate-action-pagination { display: flex; justify-content: flex-end; gap: 8px; }
+ .candidate-action-content label { display: block; margin-bottom: 6px; }

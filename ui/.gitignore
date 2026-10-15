@@ -1,0 +1,23 @@
+.idea/
+*.iml
+.vscode/
+.DS_Store
+node_modules/
+*.log
+# 本地设计工具配置、会话 token、DOM、截图和缓存不随源码发布。
+/.impeccable/
+/.impeccable-live*
+
+# Root production build and local test output; the Sites prototype keeps its tracked dist separately.
+/dist/
+# 临时构建验证目录不进入版本控制。
+/dist-*/
+/playwright-report/
+/test-results/
+/*.tsbuildinfo
+
+# Per-task local planning memory.
+/.planning/
+/task_plan.md
+/findings.md
+/progress.md

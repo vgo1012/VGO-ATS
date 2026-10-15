@@ -1,0 +1,20 @@
+.candidate-centered-table .ant-table .ant-table-thead > tr > th,
+.candidate-centered-table .ant-table .ant-table-tbody > tr > td { text-align: center; vertical-align: middle; }
+.candidate-centered-table .ant-table-column-sorters,
+.candidate-centered-table .ant-table-cell > :is(.ant-space, .candidate-skills-preview, .matching-person, .matching-total, .matching-score-blocks, .matching-row-actions) { justify-content: center; }
+.candidate-centered-table .ant-table-cell > .ant-space { align-items: center; }
+.candidate-centered-table .ant-table-cell > :is(.matching-person, .matching-total, .matching-score-blocks) { align-items: center; }
+.candidate-centered-table .ant-table-cell .ant-btn { text-align: center; }
+.onboarded-page .onboarding-flow-actions.ant-space { width: 112px; max-width: 100%; }
+.onboarded-page .onboarding-flow-actions > .ant-space-item { width: 100%; }
+.candidate-centered-table .matching-evidence-trigger { text-align: center; }
+.candidate-centered-table.matching-score-table .match-summary-trigger.ant-btn { text-align: center; }
+
+.candidate-centered-table .ant-table .talent-identity-cell { text-align: center; }
+.candidate-centered-table .ant-table .talent-identity-cell > .ant-space { width: 100%; align-items: center; }
+.candidate-centered-table .ant-table .talent-identity-cell > .ant-space > .ant-space-item { max-width: 100%; }
+.candidate-centered-table .ant-table .talent-identity-cell .table-link { position: relative; max-width: 100%; white-space: nowrap; text-align: center; }
+.candidate-centered-table .ant-table .talent-identity-cell .table-link > .anticon { position: absolute; inset-inline-end: 4px; top: 50%; transform: translateY(-50%); }
+.candidate-centered-table .ant-table .talent-identity-cell .table-link > span:not(.anticon) { overflow: hidden; text-overflow: ellipsis; }
+.candidate-centered-table .ant-table .talent-identity-cell .table-link { display: inline-flex; align-items: center; padding-inline: 22px; }
+.candidate-centered-table .ant-table .talent-identity-cell .talent-contact { margin-top: 0; font-size: 12px; }

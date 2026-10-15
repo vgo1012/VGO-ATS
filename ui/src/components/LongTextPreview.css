@@ -1,0 +1,4 @@
+.long-text-preview { display: inline-block; min-width: 0; max-width: 100%; overflow-wrap: anywhere; text-align: start; }
+.long-text-preview .ant-btn { padding-inline: 4px; vertical-align: baseline; }
+.long-text-full { white-space: pre-wrap; overflow-wrap: anywhere; max-width: 100%; }
+.candidate-recruitment-history .ant-timeline-item-content { min-width: 0; overflow-wrap: anywhere; }

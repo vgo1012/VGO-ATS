@@ -1,0 +1,78 @@
+/* 顶部居中并避开76px工作台顶栏；列表底部为移动导航保留空间。 */
+.ant-notification.error-notification-list.ant-notification-top {
+  top: max(calc(88px - var(--notification-margin-edge, 24px)), env(safe-area-inset-top));
+  transform: translateX(-50%);
+  width: min(600px, 100vw);
+  height: auto;
+  max-height: min(85vh, calc(100dvh - 176px));
+  overflow-y: auto;
+}
+
+.error-notification.ant-notification-notice.ant-notification-notice-error {
+  background: var(--error-popup, #b4233c);
+  border: 1px solid var(--error-popup, #b4233c);
+  color: var(--surface, #fff);
+  width: min(552px, calc(100vw - 48px));
+  max-width: 100%;
+}
+
+.error-notification.ant-notification-notice .ant-notification-notice-section {
+  background: var(--error-popup, #b4233c);
+  color: var(--surface, #fff);
+}
+
+.error-notification.ant-notification-notice .ant-notification-notice-title,
+.error-notification.ant-notification-notice .ant-notification-notice-description,
+.error-notification.ant-notification-notice .ant-notification-notice-icon,
+.error-notification.ant-notification-notice .ant-notification-notice-close {
+  color: var(--surface, #fff);
+}
+
+.error-notification.ant-notification-notice .ant-notification-notice-title {
+  font-size: 18px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+  padding-inline-end: 20px;
+}
+
+.error-notification.ant-notification-notice .ant-notification-notice-description {
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.error-notification.ant-notification-notice .ant-notification-notice-close {
+  width: 44px;
+  height: 44px;
+  top: 4px;
+  inset-inline-end: 4px;
+}
+
+.error-notification.ant-notification-notice .ant-notification-notice-close:hover {
+  color: var(--surface, #fff);
+  background: rgb(255 255 255 / 18%);
+}
+
+.error-notification.ant-notification-notice .ant-notification-notice-close:focus-visible {
+  outline: 2px solid var(--surface, #fff);
+  outline-offset: -4px;
+}
+
+@media (max-width: 600px) {
+  /* 给弹窗右上角关闭按钮保留触控通道，错误提示不横跨整个窄屏。 */
+  .ant-notification.error-notification-list.ant-notification-top {
+    inset-inline-start: max(12px, env(safe-area-inset-left)) !important;
+    transform: none;
+    width: calc(100vw - 72px - env(safe-area-inset-left));
+  }
+
+  .error-notification.ant-notification-notice.ant-notification-notice-error {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .error-notification-list *, .error-notification {
+    animation: none !important;
+    transition: none !important;
+  }
+}

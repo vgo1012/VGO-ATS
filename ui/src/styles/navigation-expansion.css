@@ -1,0 +1,21 @@
+/* Seven primary destinations remain readable at 1280px and in the mobile bar. */
+@media (min-width: 901px) and (max-width: 1360px) {
+  .app-shell .app-header { grid-template-columns: 180px minmax(0, 1fr) 170px; padding-inline: 16px; }
+  .app-shell .workspace-nav { gap: 4px; }
+  .app-shell .workspace-nav button { min-width: 0; padding-inline: 9px; gap: 5px; }
+}
+
+@media (min-width: 901px) and (max-width: 1120px) {
+  .app-shell .app-header { grid-template-columns: 140px minmax(0, 1fr) 48px; }
+  .app-shell .brand-logo { width: 122px; }
+  .app-shell .profile-copy, .app-shell .profile-trigger > .anticon-down { display: none; }
+  .app-shell .profile-trigger { padding: 4px; }
+  .app-shell .workspace-nav button { font-size: 13px; }
+}
+
+@media (max-width: 900px) {
+  .app-shell .profile-trigger { padding: 4px; }
+  .app-shell .mobile-bottom-nav { padding-inline: 6px; overflow-x: auto; overflow-y: hidden; scrollbar-width: thin; }
+  .app-shell .mobile-bottom-nav .workspace-nav { width: max-content; min-width: 100%; height: 58px; margin-block: 2px; justify-content: flex-start; }
+  .app-shell .mobile-bottom-nav .workspace-nav button { min-width: 88px; flex: 0 0 88px; padding-inline: 4px; white-space: nowrap; }
+}

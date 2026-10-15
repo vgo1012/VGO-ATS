@@ -1,0 +1,8 @@
+interface:
+  display_name: "HR AI 前端开发"
+  short_description: "构建可信、高效且风格统一的 React 招聘工作台"
+  brand_color: "#145962"
+  default_prompt: "Use $hr-ai-frontend-development to implement and verify a React workflow in VGO_ATS/ui, following ui/AGENTS.md, ui/PRODUCT.md and ui/DESIGN.md."
+
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,74 @@
+# 通用生产环境的非秘密模板；真实密码与签名密钥由只读挂载文件提供。
+spring:
+  config:
+    import: file:/run/secrets/application-prod-secrets.yml
+  datasource:
+    url: jdbc:mysql://mysql:3306/hr_ai?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+    username: hr_app
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      pool-name: hr-platform-prod-pool
+      connection-timeout: 5000
+      validation-timeout: 2000
+      idle-timeout: 300000
+      keepalive-time: 120000
+      max-lifetime: 600000
+      # 按部署环境容量调优，保留有界连接池。
+      maximum-pool-size: 10
+      minimum-idle: 1
+  flyway:
+    clean-disabled: true
+
+# TLS 在同机 Nginx 终止；会话 Cookie 仍强制仅经 HTTPS 发送。
+server:
+  forward-headers-strategy: native
+  servlet:
+    session:
+      cookie:
+        secure: true
+        http-only: true
+        same-site: lax
+
+# 生产环境不公开 OpenAPI 文档。
+springdoc:
+  api-docs:
+    enabled: false
+
+hr:
+  # 游标签名密钥位于挂载的生产 secrets YAML。
+  pagination:
+    cursor-signing-key: ""
+  malware-scan:
+    mode: clamav
+    host: clamav
+    port: 3310
+    connect-timeout: 3s
+    write-timeout: 2m
+    read-timeout: 2m
+  document-extraction:
+    # 限制扫描页渲染成本和模型请求体积。
+    render-dpi: 120
+  ai:
+    # 模型功能默认关闭；启用前通过外部配置提供模型和独立归档密钥。
+    parsing:
+      enabled: false
+    multimodal:
+      enabled: false
+  search:
+    mode: elasticsearch
+    worker-enabled: true
+    elasticsearch:
+      base-url: http://elasticsearch:9200
+      alias: resume-facts-current
+      # 生产 Compose 使用单节点 Elasticsearch；副本必须为 0，避免不可分配副本令集群长期处于 yellow。
+      number-of-replicas: 0
+      timeout: 10s
+  messaging:
+    # Broker 仅负责唤醒 MySQL 持久任务；发布失败、重复投递和重启仍由 Outbox 与租约恢复。
+    mode: rabbitmq
+    worker-enabled: true
+    consumer-enabled: true
+    host: rabbitmq
+  bootstrap-admin:
+    # 实际启用状态、邮箱和初始密码仅存在于挂载的 secrets YAML。
+    enabled: false

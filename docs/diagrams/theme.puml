@@ -1,0 +1,52 @@
+!pragma layout smetana
+skinparam defaultFontName SansSerif
+skinparam defaultFontSize 14
+skinparam dpi 150
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 10
+skinparam ArrowColor #46627F
+skinparam ArrowThickness 1.2
+skinparam activity {
+  BackgroundColor #EEF5FF
+  BorderColor #46627F
+  DiamondBackgroundColor #FFF4D6
+  DiamondBorderColor #9B6A17
+  StartColor #2E7D5B
+  EndColor #A64545
+}
+skinparam component {
+  BackgroundColor #EEF5FF
+  BorderColor #46627F
+}
+skinparam package {
+  BackgroundColor #F7F9FC
+  BorderColor #91A3B7
+}
+skinparam database {
+  BackgroundColor #F3EDFF
+  BorderColor #6D55A3
+}
+skinparam queue {
+  BackgroundColor #FFF4D6
+  BorderColor #9B6A17
+}
+skinparam node {
+  BackgroundColor #F7F9FC
+  BorderColor #60758A
+}
+skinparam class {
+  BackgroundColor #F7FAFD
+  BorderColor #526B82
+  ArrowColor #526B82
+}
+skinparam state {
+  BackgroundColor #EEF5FF
+  BorderColor #46627F
+  StartColor #2E7D5B
+  EndColor #A64545
+}
+skinparam note {
+  BackgroundColor #FFFBEA
+  BorderColor #A88A38
+}

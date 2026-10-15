@@ -1,0 +1,184 @@
+/* Focused operations: one quiet surface, a clear response to each action. */
+:root {
+  --dialog-radius: 18px;
+  --dialog-shadow: 0 24px 80px rgba(17, 38, 44, .18), 0 6px 20px rgba(17, 38, 44, .07);
+  --interaction-ease: cubic-bezier(.16, 1, .3, 1);
+}
+
+.workspace-dialog-root .ant-modal-wrap.ant-modal-centered { display: flex; align-items: center; justify-content: center; padding: 10px 0; }
+.workspace-dialog-root .ant-modal-wrap.ant-modal-centered::before { display: none; }
+.workspace-dialog-root .ant-modal-mask { background: rgb(15 23 42 / 28%); backdrop-filter: blur(4px); }
+.workspace-dialog.ant-modal { max-width: calc(100vw - 40px); padding-bottom: 0; top: 0; }
+.workspace-dialog .ant-modal-container { display: flex; flex-direction: column; padding: 0; max-height: calc(100dvh - 48px); overflow: hidden; border-radius: var(--dialog-radius); box-shadow: var(--dialog-shadow); }
+.workspace-dialog-reader { --reader-height: 640px; }
+.workspace-dialog-reader.workspace-dialog-wide { --reader-height: 720px; }
+.workspace-dialog-reader .ant-modal-container { height: min(var(--reader-height), calc(100dvh - 48px)); }
+.dialog-detail-toolbar, .candidate-editor-heading { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 18px; }
+.candidate-editor-heading .ant-typography { margin: 0; }
+.candidate-editor-actions { display: flex; justify-content: flex-end; gap: 8px; padding-top: 16px; border-top: 1px solid #f0f3f5; }
+.candidate-detail-loading { padding-top: 8px; color: var(--muted); }
+.workspace-dialog-step-content:focus { outline: none; }
+.workspace-dialog .ant-modal-header { flex-shrink: 0; padding: 24px 64px 18px 28px; margin: 0; border: 0; background: transparent; }
+:is(.ant-modal .ant-modal-title, .ant-drawer .ant-drawer-title) { color: var(--ink-strong); font-size: 20px; line-height: 1.4; font-weight: 650; letter-spacing: -.02em; }
+.workspace-dialog .ant-modal-close { top: 17px; inset-inline-end: 18px; width: 40px; height: 40px; border-radius: 50%; color: var(--muted); transition: background-color 160ms ease, color 160ms ease; }
+.workspace-dialog .ant-modal-close:hover { background: var(--brand-100); color: var(--operator); }
+.workspace-dialog .ant-modal-body { flex: 1 1 auto; min-height: 0; padding: 0 28px 24px; overflow: auto; overscroll-behavior: contain; scrollbar-gutter: stable; }
+.workspace-dialog .ant-modal-footer { flex-shrink: 0; margin: 0; padding: 16px 28px 20px; border-top: 1px solid #f0f3f5; background: #fbfcfc; }
+.workspace-dialog .ant-modal-footer .ant-btn { min-width: 88px; height: 40px; border-radius: 10px; }
+.workspace-dialog .ant-form-item { margin-bottom: 20px; }
+.workspace-dialog .ant-form-item-label { padding-bottom: 8px; }
+.workspace-dialog .ant-alert { margin-block: 0 18px; border: 0; border-radius: 12px; }
+.workspace-dialog .ant-alert .ant-alert { margin-bottom: 0; }
+.workspace-dialog .ant-form, .workspace-dialog .ant-table-wrapper, .workspace-dialog .ant-select { max-width: 100%; }
+.workspace-dialog .ant-table-wrapper { min-width: 0; }
+.workspace-dialog .ant-descriptions { margin-block: 0 20px; }
+.workspace-dialog .ant-descriptions-item-content { overflow-wrap: anywhere; }
+.workspace-dialog .ant-descriptions-item-label,
+.workspace-dialog .ant-statistic .ant-statistic-title,
+.workspace-dialog .matching-evidence-metrics article > span { color: #52627a; }
+.workspace-dialog-root .workspace-dialog .ant-tag.ant-tag-green:not(.ant-tag-disabled) { color: #26710c; }
+.workspace-dialog-root .workspace-dialog .ant-tag.ant-tag-gold:not(.ant-tag-disabled) { color: #815704; }
+.workspace-dialog .ant-btn, .ant-drawer .ant-btn { transition: color 160ms ease, background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease; }
+.workspace-dialog .ant-btn-primary:not(:disabled):not(.ant-btn-dangerous) { background: var(--operator); }
+.workspace-dialog .ant-btn-primary:not(:disabled):not(.ant-btn-dangerous):hover { background: var(--brand-800); }
+.workspace-dialog .ant-btn-primary:not(:disabled):not(.ant-btn-dangerous):active { background: var(--operator-active); }
+.workspace-dialog .ant-btn-default:not(:disabled):not(.ant-btn-disabled):not(.ant-btn-dangerous):is(:hover, :active) { color: var(--brand-800); border-color: var(--brand-800); }
+
+/* Cards inside an operation are sections, not additional windows. */
+.workspace-dialog .ant-card, .ant-drawer .ant-card, .app-main .ant-card .ant-card { background: transparent; border: 0; border-radius: 0; box-shadow: none; }
+.workspace-dialog .ant-card-head, .ant-drawer .ant-card-head, .app-main .ant-card .ant-card .ant-card-head { min-height: 40px; padding: 0; border: 0; background: transparent; }
+.workspace-dialog .ant-card-head-title, .ant-drawer .ant-card-head-title { padding-block: 8px; font-size: var(--type-section); font-weight: 600; line-height: 1.5; white-space: normal; }
+.workspace-dialog .ant-card-body, .ant-drawer .ant-card-body, .app-main .ant-card .ant-card .ant-card-body { padding: 12px 0 20px; }
+.workspace-dialog .ant-card-head-wrapper, .ant-drawer .ant-card-head-wrapper { flex-wrap: wrap; gap: 8px 16px; }
+.workspace-dialog .ant-card-extra, .ant-drawer .ant-card-extra { margin-inline-start: 0; max-width: 100%; }
+.workspace-dialog .ant-space, .ant-drawer .ant-space { max-width: 100%; }
+.workspace-dialog .ant-space .ant-space { flex-wrap: wrap; }
+.ant-drawer .ant-drawer-content { border-radius: 18px 0 0 18px; }
+.ant-drawer .ant-drawer-header { border-bottom-color: #f0f3f5; }
+.ant-message .ant-message-notice-content { border-radius: 12px; padding: 12px 18px; box-shadow: 0 10px 32px rgba(17, 38, 44, .12); }
+.ant-message .ant-message-notice-content .ant-message-custom-content { gap: 8px; }
+
+/* rc-motion renders prepare/start before active. Keep that first paint hidden, including the mask. */
+.workspace-dialog-motion-enter, .workspace-dialog-motion-appear,
+.workspace-mask-motion-enter, .workspace-mask-motion-appear { opacity: 0; }
+/* rc-dialog's click-derived inline origin can sit outside the dialog and amplify its travel. */
+.workspace-dialog.ant-modal { transform-origin: center !important; }
+.workspace-dialog-motion-enter, .workspace-dialog-motion-appear, .workspace-dialog-motion-leave { animation-duration: 240ms; animation-fill-mode: both; animation-timing-function: var(--interaction-ease); }
+.workspace-dialog-motion-enter-active, .workspace-dialog-motion-appear-active { animation-name: workspace-dialog-in; }
+.workspace-dialog-motion-leave-active { animation-name: workspace-dialog-out; animation-duration: 160ms; }
+.workspace-mask-motion-enter, .workspace-mask-motion-appear, .workspace-mask-motion-leave { animation-duration: 180ms; animation-fill-mode: both; }
+.workspace-mask-motion-enter-active, .workspace-mask-motion-appear-active { animation-name: workspace-mask-in; }
+.workspace-mask-motion-leave-active { animation-name: workspace-mask-out; }
+@keyframes workspace-dialog-in { from { opacity: 0; transform: translateY(8px) scale(.99); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes workspace-dialog-out { from { opacity: 1; transform: translateY(0) scale(1); } to { opacity: 0; transform: translateY(8px) scale(.985); } }
+@keyframes workspace-mask-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes workspace-mask-out { from { opacity: 1; } to { opacity: 0; } }
+
+.dialog-description { margin: 0 0 20px; color: var(--muted); line-height: 1.7; font-size: 13px; }
+.matching-toolstrip { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; padding: 2px 0 4px; }
+.matching-toolstrip .ant-btn { border-color: transparent; background: transparent; color: #52627a; }
+.matching-toolstrip .ant-btn:hover { background: var(--brand-100); color: var(--operator); }
+.workspace-action-row.ant-btn { display: flex; justify-content: flex-start; height: auto; min-height: 48px; padding: 12px 4px; border: 0; color: #52627a; }
+.workspace-action-row .anticon:last-child { margin-left: auto; }
+.matching-results-card > .ant-card-body { padding-top: 0; }
+.matching-result-ledger { border: 0; border-radius: 0; }
+.matching-result-ledger > .candidate-bulk-actions { display: flex; width: 100%; padding: 0 18px 12px; }
+.matching-evidence-trigger { border: 0; padding: 7px 4px; border-radius: 8px; background: transparent; font: inherit; text-align: left; cursor: pointer; transition: background-color 160ms ease; }
+.matching-evidence-trigger:hover { background: var(--evidence-surface); }
+.matching-evidence-trigger small { color: var(--evidence); }
+.workspace-dialog .matching-evidence-panel { background: transparent; padding: 0; gap: 24px; }
+.workspace-dialog .matching-evidence-metrics { padding: 16px 20px; border-radius: 12px; background: var(--evidence-surface); }
+.workspace-dialog .matching-evidence-metrics article { border: 0; background: transparent; border-radius: 0; padding: 0; }
+.workspace-dialog .matching-evidence-dimension { padding: 0 0 12px; }
+.workspace-dialog .matching-evidence-dimension .ant-card-body { padding: 8px 0; }
+.workspace-dialog .matching-evidence-panel .ant-descriptions { margin: 0; }
+.workspace-dialog .matching-config-grid { grid-template-columns: minmax(0, 2fr) minmax(220px, 1fr); }
+.workspace-dialog .matching-dimension-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.workspace-dialog .dimension-card { padding: 12px; border-radius: 10px; background: var(--evidence-surface); }
+.workspace-dialog .dimension-card .ant-statistic-content { font-size: 24px; }
+.workspace-dialog .matching-profile-card .ant-card-head { padding-bottom: 12px; }
+.workspace-dialog .matching-run-controls { grid-template-columns: minmax(0, 1fr); padding: 0; border: 0; }
+.workspace-dialog .ant-space-item { min-width: 0; max-width: 100%; }
+.workspace-dialog .ant-card-head-wrapper { min-width: 0; }
+.workspace-dialog .matching-run-controls > .ant-alert { margin-bottom: 0; }
+.interview-material-dialog.workspace-dialog-reader { --reader-height: calc(100dvh - 48px); }
+.interview-material-dialog .ant-modal-body { display: flex; flex-direction: column; overflow: hidden; }
+.interview-material-dialog .ant-modal-body > div:not([hidden]),
+.interview-material-dialog .workspace-dialog-step-content:not([hidden]) { display: flex; min-height: 0; flex: 1 1 auto; flex-direction: column; }
+.interview-material-viewer { display: grid; flex: 1 1 auto; grid-template-columns: minmax(0, 1.08fr) minmax(360px, .92fr); gap: 16px; min-height: 0; }
+.interview-material-pane { display: flex; min-width: 0; min-height: 0; flex-direction: column; overflow: hidden; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+.interview-material-pane > header { min-height: 68px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 14px; border-bottom: 1px solid var(--divider); background: var(--canvas); }
+.interview-material-pane > header .ant-typography { margin: 0; }
+.interview-material-pane > header h4.ant-typography { font-size: var(--type-section); font-weight: 600; line-height: 1.5; }
+.interview-material-loading { min-height: 240px; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 12px; color: var(--muted); }
+.interview-material-dialog .interview-material-loading { flex: 1 1 auto; }
+.interview-resume-preview { display: block; width: 100%; height: 100%; min-height: 0; flex: 1 1 auto; border: 0; background: #eef2f6; }
+.interview-resume-image { display: block; width: 100%; height: 100%; min-height: 0; flex: 1 1 auto; margin: auto; object-fit: contain; background: #eef2f6; }
+.interview-jd-preview.ant-typography { min-height: 0; flex: 1 1 auto; margin: 0; padding: 18px 22px; overflow: auto; white-space: pre-wrap; line-height: 1.75; scrollbar-gutter: stable; }
+
+/* The selected destination travels; hover and pending navigation retain their own feedback. */
+.workspace-nav { position: relative; isolation: isolate; }
+.workspace-nav-indicator { position: absolute; z-index: -1; inset: 0 auto auto 0; pointer-events: none; opacity: 0; border-radius: 999px; background: var(--operator); box-shadow: 0 2px 8px rgb(37 99 235 / 12%); }
+.workspace-nav[data-indicator-ready] .workspace-nav-indicator { opacity: 1; transition: transform 200ms var(--interaction-ease); }
+.workspace-nav[data-indicator-ready] button.active { background: transparent; }
+.workspace-nav button:not(.active):hover { background: var(--surface); }
+
+/* Shared control rhythm without changing table geometry or public-page choreography. */
+:is(.app-main, .workspace-dialog, .ant-drawer) .ant-btn { box-shadow: none; transition: color 160ms ease, background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease, scale 160ms var(--interaction-ease); }
+:is(.app-main, .workspace-dialog, .ant-drawer) .ant-btn.ant-btn-sm { height: 32px; min-height: 32px; }
+:is(.app-main, .workspace-dialog, .ant-drawer) .ant-btn-primary:not(:disabled):not(.ant-btn-disabled) { box-shadow: 0 2px 6px rgba(17, 38, 44, .08); }
+:is(.app-main, .workspace-dialog, .ant-drawer) .ant-btn:not(:disabled):not(.ant-btn-disabled):not(.ant-btn-loading):active { scale: .98; box-shadow: none; }
+.workspace-action-row .anticon:last-child { transition: translate 180ms var(--interaction-ease); }
+.workspace-action-row:not(:disabled):is(:hover, :focus-visible) .anticon:last-child { translate: 3px 0; }
+.matching-evidence-trigger { transition: background-color 160ms ease, scale 160ms var(--interaction-ease); }
+.matching-evidence-trigger:active { scale: .99; }
+
+/* Read-only evidence arrives from its source. Forms keep their established focus transition. */
+.workspace-dialog-detail.workspace-dialog-motion-enter-active,
+.workspace-dialog-detail.workspace-dialog-motion-appear-active { animation-name: workspace-detail-in; animation-duration: 250ms; }
+.workspace-dialog-detail.workspace-dialog-motion-leave-active { animation-name: workspace-detail-out; }
+@keyframes workspace-detail-in { from { opacity: 0; transform: translate(var(--detail-x), var(--detail-y)) scale(.99); } to { opacity: 1; transform: translate(0, 0) scale(1); } }
+@keyframes workspace-detail-out { from { opacity: 1; transform: translate(0, 0) scale(1); } to { opacity: 0; transform: translate(var(--detail-x), var(--detail-y)) scale(.99); } }
+
+@media (max-width: 900px) {
+  .interview-material-dialog .ant-modal-body { overflow: auto; }
+  .interview-material-dialog .interview-material-viewer { flex: 0 0 auto; grid-template-columns: minmax(0, 1fr); }
+  .interview-material-dialog .interview-material-pane { height: min(560px, calc(100dvh - 140px)); min-height: 420px; }
+}
+
+@media (max-width: 640px) {
+  .workspace-dialog.ant-modal { max-width: calc(100% - 20px); margin: 0 auto; }
+  .workspace-dialog .ant-modal-container { max-height: calc(100dvh - 20px); border-radius: 16px; }
+  .workspace-dialog-reader .ant-modal-container { height: min(var(--reader-height), calc(100dvh - 20px)); }
+  .workspace-dialog .ant-modal-header { padding: 20px 58px 16px 18px; }
+  :is(.ant-modal .ant-modal-title, .ant-drawer .ant-drawer-title) { font-size: 18px; }
+  .workspace-dialog .ant-modal-body { padding: 0 18px 20px; }
+  .workspace-dialog .ant-modal-footer { padding: 14px 18px 18px; }
+  .workspace-dialog .ant-modal-close { top: 12px; inset-inline-end: 10px; }
+  .workspace-dialog .ant-card-extra .ant-space { flex-wrap: wrap; }
+  .workspace-dialog .matching-config-grid { grid-template-columns: 1fr; }
+  .workspace-dialog .matching-dimension-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .workspace-dialog .matching-evidence-metrics { padding: 16px; gap: 16px; }
+  .interview-material-viewer { grid-template-columns: minmax(0, 1fr); min-height: 0; }
+  :is(.app-main, .workspace-dialog, .ant-drawer) .ant-btn,
+  :is(.app-main, .workspace-dialog, .ant-drawer) .ant-btn.ant-btn-sm { min-height: 44px; }
+  :is(.app-main, .workspace-dialog, .ant-drawer) :is(.ant-input-affix-wrapper, .ant-input-number, .ant-picker, .ant-select-single),
+  :is(.app-main, .workspace-dialog, .ant-drawer) input.ant-input:not(.ant-input-affix-wrapper input) { min-height: 44px; }
+  .workspace-dialog .ant-modal-close { width: 44px; height: 44px; }
+}
+
+@media (max-width: 767px), (pointer: coarse) {
+  .ant-modal .ant-modal-close { min-width: 44px; min-height: 44px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .workspace-dialog-motion-enter, .workspace-dialog-motion-appear, .workspace-dialog-motion-leave,
+  .workspace-mask-motion-enter, .workspace-mask-motion-appear, .workspace-mask-motion-leave { animation-duration: .01ms !important; }
+  .workspace-nav[data-indicator-ready] .workspace-nav-indicator { transition: none; }
+  :is(.app-main, .workspace-dialog, .ant-drawer) .ant-btn:not(:disabled):not(.ant-btn-disabled):not(.ant-btn-loading):active,
+  .matching-evidence-trigger:active { scale: none; }
+  .workspace-action-row:not(:disabled):is(:hover, :focus-visible) .anticon:last-child { translate: none; }
+  .workspace-dialog-detail.workspace-dialog-motion-enter-active,
+  .workspace-dialog-detail.workspace-dialog-motion-appear-active { animation-name: workspace-mask-in; }
+  .workspace-dialog-detail.workspace-dialog-motion-leave-active { animation-name: workspace-mask-out; }
+}

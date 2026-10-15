@@ -1,0 +1,55 @@
+# 本机开发默认值：凭据均为可丢弃示例，仅用于 localhost；不得用于共享或生产环境。
+server:
+  # 本机示例凭据对应的服务不向局域网开放。
+  address: 127.0.0.1
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/vgo_hr?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+    username: hr_app
+    password: local-development-db-password
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      pool-name: hr-platform-pool
+      connection-timeout: 5000
+      validation-timeout: 2000
+      idle-timeout: 300000
+      keepalive-time: 120000
+      max-lifetime: 600000
+      maximum-pool-size: 10
+      minimum-idle: 1
+
+hr:
+  pagination:
+    # 公开的开发签名值；生产必须使用独立密钥。
+    cursor-signing-key: local-development-cursor-signing-key-change-me
+  object-storage:
+    # 原始文件保存在本机；该目录已从 Git 和 Docker 构建上下文排除。
+    mode: local
+    local-root: .runtime/objects
+  malware-scan:
+    # 开发扫描器拒绝未知文件类型；生产须启用 ClamAV。
+    mode: development
+    port: 3310
+    connect-timeout: 2s
+    read-timeout: 2m
+  document-extraction:
+    render-dpi: 120
+  ai:
+    # 未配置模型凭据时不调用外部服务；手动开启解析时必须提供独立归档密钥。
+    parsing:
+      enabled: false
+    multimodal:
+      enabled: false
+  search:
+    mode: elasticsearch
+    worker-enabled: true
+    elasticsearch:
+      base-url: http://localhost:9200
+      alias: resume-facts-current
+      # 本机单节点不分配副本；公开凭据与本机 Compose 一致。
+      number-of-replicas: 0
+      api-key: ""
+      username: elastic
+      password: local-development-search-password
+      timeout: 10s

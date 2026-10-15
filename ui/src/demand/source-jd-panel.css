@@ -1,0 +1,234 @@
+.source-jd-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 20px;
+}
+
+.source-jd-form-row {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  column-gap: 20px;
+}
+
+.source-jd-form-wide {
+  grid-column: 1 / -1;
+}
+
+.source-jd-form .ant-input-number {
+  width: 100%;
+}
+
+.source-jd-detail-summary,
+.source-jd-detail-columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.source-jd-detail .source-jd-detail-summary .ant-alert {
+  margin-bottom: 16px;
+  padding: 12px;
+}
+
+.source-jd-detail-summary .ant-alert-description {
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.source-jd-detail-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--divider);
+}
+
+.source-jd-detail-toolbar .ant-select {
+  width: 260px;
+}
+
+.source-jd-detail-columns > section {
+  min-width: 0;
+}
+
+.workspace-dialog.source-jd-detail .ant-table-content {
+  max-height: none;
+  overflow: visible !important;
+  scrollbar-gutter: auto;
+}
+
+.source-jd-detail .ant-descriptions-view > table {
+  width: 100%;
+  table-layout: fixed;
+}
+
+.source-jd-detail .ant-descriptions-item-label {
+  width: 100px;
+}
+
+.source-jd-detail .ant-space,
+.source-jd-detail .ant-space-item {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.source-jd-detail .ant-tag {
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.source-jd-detail-columns h3 {
+  margin: 16px 0 12px;
+  color: var(--ink-strong);
+  font-size: var(--type-section);
+  font-weight: 600;
+}
+
+.source-jd-detail-text {
+  padding: 16px;
+  border-radius: 8px;
+  background: var(--canvas);
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.85;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.source-jd-department-detail .source-jd-detail-text {
+  margin-bottom: 16px;
+}
+
+.source-jd-department-table {
+  margin-top: 16px;
+}
+
+.source-jd-department-dialog .source-jd-department-table,
+.source-jd-department-dialog .source-jd-department-table :is(.ant-spin, .ant-spin-container, .ant-table, .ant-table-container, .ant-table-content) {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.source-jd-department-dialog .source-jd-department-table .ant-table-content {
+  max-height: none;
+}
+
+.source-jd-department-dialog .ant-modal-body,
+.source-jd-department-dialog .ant-modal-body > div:first-child {
+  display: flex;
+  flex-direction: column;
+}
+
+.source-jd-department-dialog .ant-modal-body > div:first-child {
+  flex: 1;
+  min-height: 0;
+}
+
+.source-jd-department-dialog .data-page-controls.compact-pagination {
+  margin-top: auto;
+  padding-right: 0;
+}
+
+@media (max-width: 900px) {
+  .source-jd-detail-summary,
+  .source-jd-detail-columns {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+}
+
+@media (max-width: 767px) {
+  .source-jd-form {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .source-jd-form-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .source-jd-form-wide {
+    grid-column: auto;
+  }
+}
+
+.source-jd-identity,
+.source-jd-owner {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.source-jd-meta {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.source-jd-table .source-jd-title {
+  display: block;
+  flex: 0 1 auto;
+  overflow: hidden;
+  min-width: 0;
+  height: auto;
+  padding: 0;
+  font-weight: 600;
+  text-align: center;
+}
+
+.source-jd-table .source-jd-title > span {
+  display: block;
+  max-width: 100%;
+}
+
+.source-jd-title > span,
+.source-jd-distinction,
+.source-jd-code {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.source-jd-distinction {
+  flex: 0 1 auto;
+  max-width: 50%;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: var(--canvas);
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.source-jd-code {
+  color: var(--muted);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.source-jd-owner {
+  overflow-wrap: anywhere;
+}
+
+.source-jd-table .ant-space-vertical {
+  align-items: center;
+}
+
+.source-jd-table .ant-tag {
+  margin-inline-end: 0;
+}
+
+@media (max-width: 767px), (pointer: coarse) {
+  :is(.jd-library-page, .source-jd-department-dialog) .ant-btn,
+  :is(.jd-library-page, .source-jd-department-dialog) .ant-input-affix-wrapper { min-height: 44px; }
+  :is(.jd-library-page, .source-jd-department-dialog) .ant-input-search .ant-btn { min-width: 44px; }
+  :is(.jd-library-page, .source-jd-department-dialog) .ant-input-search .ant-input-affix-wrapper { padding-inline-end: 44px; }
+  :is(.jd-library-page, .source-jd-department-dialog) .ant-input-search .ant-input-suffix { position: absolute; inset-block: -1px; inset-inline-end: 0; }
+  :is(.jd-library-page, .source-jd-department-dialog) .ant-input-search .ant-input-clear-icon { display: grid; place-items: center; width: 44px; height: 100%; }
+}

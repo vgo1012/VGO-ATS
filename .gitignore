@@ -1,0 +1,56 @@
+# 本地依赖、构建和测试产物不随源码发布。
+**/node_modules/
+**/target/
+/ui/dist/
+/ui/dist-*/
+/ui/*.tsbuildinfo
+/ui/playwright-report/
+/ui/test-results/
+/ui/.impeccable/review/
+/ui/.impeccable/mocks/
+
+# 私有配置、业务备份和开发证据只保存在本地。
+**/.runtime/
+**/.planning/
+**/.tmp/
+**/logs/
+**/.impeccable/
+**/.impeccable-live*/
+**/.impeccable-live*
+**/backups/
+**/exports/
+*.log
+*.log.*
+*.bundle
+*.sql.gz
+*.sql.bak
+*.dump
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+.env
+.env.*
+!.env.example
+*.private.yml
+*.private.yaml
+*secrets*.yml
+*secrets*.yaml
+!*secrets.example.yml
+!*secrets.example.yaml
+
+# 本机文件管理器元数据。
+.DS_Store
+
+# 本机 IDE、联调脚本和验收证据不随源码发布。
+.idea/
+.vscode/
+.run/
+/task_plan.md
+/findings.md
+/progress.md
+/ui/playwright.*-local.config.ts
+/ui/e2e/*.live.ts
+/ui/design-qa*.md
+/ui/docs/primary-navigation/selected-reference.png

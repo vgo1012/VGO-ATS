@@ -1,0 +1,40 @@
+@startuml
+!include ../theme.puml
+title VGO ATS 本机开发与可选独立部署
+left to right direction
+
+node "本机开发环境" as Local {
+  node "React / Vite\nlocalhost:5173" as Web
+  node "Java 模块化单体\nlocalhost:8080" as App
+  database "独立 MySQL\nvgo_hr" as DB
+  database "独立 Elasticsearch" as ES
+  folder "LOCAL 文件存储\n.runtime/objects" as Files
+  Web --> App : 同源代理 /api
+  App --> DB
+  App --> ES
+  App --> Files
+}
+
+cloud "可选模型、邮件和协同平台\n默认关闭，显式配置后启用" as External
+App ..> External : 经窄 API / Port
+
+node "使用者自行配置的部署环境" as Deployment {
+  node "HTTPS / Nginx\nReact 静态制品" as Edge
+  node "同一 bootstrap 制品" as Server
+  database "自己的业务库与搜索" as Services
+  folder "自己的持久文件存储" as Storage
+  Edge --> Server : 同源 /api 与 SSE
+  Server --> Services
+  Server --> Storage
+}
+
+note bottom of Local
+端口只绑定本机，独立命名卷与示例凭据；
+真实外部测试必须确认隔离，不操作共享业务数据。
+end note
+
+note bottom of Deployment
+使用自己的域名、证书、Secret、备份和健康扫描器；
+部署模板不带公司服务器身份或运行参数。
+end note
+@enduml

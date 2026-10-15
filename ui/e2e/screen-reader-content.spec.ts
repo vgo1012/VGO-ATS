@@ -1,0 +1,35 @@
+import AxeBuilder from '@axe-core/playwright';
+import { expect, test } from '@playwright/test';
+import { reviewWorkspace } from './fixtures/ux-review';
+
+test('辅助阅读内容保持可访问且不占据可见布局', async ({ page }, info) => {
+  await reviewWorkspace(page);
+  await page.route('**/api/v1/candidates/person-a/resume-versions?**', route => route.fulfill({ json: { items: [], hasMore: false, nextCursor: null } }));
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  await page.goto('/talents');
+  const status = page.locator('.sr-only[role="status"]');
+  await expect(status).toHaveCount(1);
+  expect(await status.evaluate(element => element.getBoundingClientRect().height)).toBeLessThanOrEqual(1);
+  await expect(status).not.toHaveCSS('display', 'none');
+  await expect(status).not.toHaveCSS('visibility', 'hidden');
+  await page.getByRole('button', { name: '详情与版本', exact: true }).click();
+  const dialog = page.getByRole('dialog');
+  const focusTarget = dialog.locator('[data-detail-focus]');
+  await expect(dialog.getByRole('region', { name: '关键资料' })).toBeVisible();
+  expect(await focusTarget.evaluate(element => element.getBoundingClientRect().width)).toBeLessThanOrEqual(1);
+  expect(await focusTarget.evaluate(element => element.getBoundingClientRect().height)).toBeLessThanOrEqual(1);
+  expect(await focusTarget.ariaSnapshot()).toContain('候选人详情');
+  await focusTarget.focus();
+  await expect(focusTarget).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(focusTarget).not.toBeFocused();
+  expect(await dialog.evaluate(element => element.contains(document.activeElement))).toBe(true);
+  await expect(dialog).not.toHaveClass(/workspace-dialog-motion-(enter|appear)/);
+  await expect(dialog).toHaveCSS('opacity', '1');
+  expect((await new AxeBuilder({ page }).include('[role="dialog"]').withTags(['wcag2a', 'wcag2aa']).analyze()).violations).toEqual([]);
+  await dialog.screenshot({ path: info.outputPath('accessible-detail.png') });
+  await dialog.getByRole('button', { name: '关闭', exact: true }).click();
+  await expect(page.getByRole('button', { name: '详情与版本', exact: true })).toBeFocused();
+  expect(errors).toEqual([]);
+});

@@ -1,0 +1,140 @@
+.interview-workspace-page {
+  gap: 12px;
+  --schedule-card-height: 80px;
+  --schedule-blue: #1264d1;
+  --schedule-orange: #b94a0b;
+  --schedule-green: #08763e;
+  --schedule-purple: #7938c2;
+  --schedule-neutral: #596579;
+  --schedule-overdue: #c52232;
+}
+.interview-workspace-page .schedule-toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding: 14px 16px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+.schedule-range-controls, .schedule-toolbar-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.schedule-range-controls > b { margin-right: 12px; }
+.schedule-range-controls > .ant-btn { min-width: 90px; }
+.schedule-range-label { display: inline-flex; align-items: center; gap: 14px; margin-left: 12px; padding: 7px 16px; border: 1px solid var(--line); border-radius: 6px; font-weight: 600; }
+.schedule-range-label .anticon { color: var(--brand-700); }
+.schedule-toolbar-actions > .ant-btn { min-width: 130px; margin-left: 12px; }
+.interview-workspace-page .schedule-current-week { border-color: transparent; background: var(--brand-100); color: var(--brand-700); font-weight: 600; }
+.interview-workspace-page .schedule-layout { grid-template-columns: minmax(0, 1fr) 300px; gap: 16px; }
+.interview-workspace-page .schedule-main { gap: 12px; }
+.interview-workspace-page .data-page-controls { position: static; }
+.interview-workspace-page .interview-filters { display: grid; grid-template-columns: auto minmax(0, 1fr) 80px; align-items: center; gap: 12px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+.interview-filters > b { white-space: nowrap; font-size: 14px; }
+.schedule-primary-filters { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; min-width: 0; }
+.schedule-filter-field { display: flex; align-items: center; min-width: 0; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); }
+.schedule-filter-field:focus-within { border-color: var(--brand-700); }
+.schedule-filter-field > .ant-select, .schedule-job-filter { flex: 1; min-width: 0; }
+.schedule-primary-filters .ant-select { width: 100%; border: 0; box-shadow: none; background: transparent; }
+.schedule-job-filter > .ant-col { max-width: 100%; }
+.schedule-job-filter > .ant-col + .ant-col { margin-top: 6px; }
+.interview-workspace-page .interview-calendar > .ant-card-body { padding: 0; overflow: hidden; }
+.schedule-calendar-legend { display: flex; flex-wrap: wrap; gap: 8px 16px; padding: 10px 16px; border-bottom: 1px solid var(--line); font-size: 12px; }
+.schedule-calendar-legend > span { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); }
+.schedule-calendar-legend > span::before { content: ''; width: 8px; height: 8px; border-radius: 2px; background: var(--event-color); }
+.interview-workspace-page .scheduled { --event-color: var(--schedule-blue); }
+.interview-workspace-page .external { --event-color: var(--schedule-orange); }
+.interview-workspace-page .completed { --event-color: var(--schedule-green); }
+.interview-workspace-page .communication { --event-color: var(--schedule-purple); }
+.interview-workspace-page .cancelled { --event-color: var(--schedule-neutral); }
+.interview-workspace-page .overdue-legend { --event-color: var(--schedule-overdue); color: var(--schedule-overdue); font-weight: 600; }
+.schedule-calendar-scroll { overflow: hidden; scrollbar-color: var(--schedule-neutral) var(--canvas); scroll-padding-block: 84px 12px; }
+.schedule-calendar-scroll:focus-visible { outline: 2px solid var(--brand-700); outline-offset: -2px; }
+.interview-workspace-page .interview-week-grid { min-width: 0; width: 100%; min-height: 100%; grid-template-columns: repeat(7, minmax(0, 1fr)); border: 0; border-radius: 0; align-items: stretch; }
+.interview-workspace-page .interview-week-grid > section { min-width: 0; min-height: 0; background: var(--surface); }
+.interview-workspace-page .interview-week-grid > section.weekend { background: color-mix(in srgb, var(--schedule-overdue) 3%, var(--surface)); }
+.interview-workspace-page .interview-week-grid > section.today { background: color-mix(in srgb, var(--operator) 4%, var(--surface)); }
+.interview-workspace-page .interview-week-grid section > header { position: sticky; top: 0; z-index: 1; flex-direction: column; gap: 4px; height: 64px; padding: 8px; background: var(--surface); }
+.interview-workspace-page .interview-week-grid section.today > header { background: var(--brand-100); }
+.interview-week-grid header > b, .interview-week-grid header > span { display: flex; align-items: center; justify-content: space-between; gap: 4px; }
+.interview-week-grid header > span { font-size: 18px; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
+.interview-week-grid header small { font-size: 12px; font-weight: 400; color: var(--schedule-neutral); }
+.interview-week-grid header em { font-size: 12px; font-style: normal; color: var(--operator); }
+.schedule-day-markers { display: inline-flex; align-items: center; gap: 4px; }
+.interview-workspace-page .interview-week-grid section.weekend > header { background: color-mix(in srgb, var(--schedule-overdue) 8%, var(--surface)); }
+.interview-workspace-page .interview-week-grid section.weekend > header > b,
+.interview-workspace-page .interview-week-grid section.weekend > header > span { color: var(--schedule-overdue); }
+.interview-week-grid header .schedule-weekend-badge { padding: 1px 4px; border-radius: 3px; background: color-mix(in srgb, var(--schedule-overdue) 12%, var(--surface)); color: color-mix(in srgb, var(--schedule-overdue) 80%, var(--ink)); }
+.interview-workspace-page .interview-week-grid section > .schedule-day-periods { padding: 0; gap: 0; }
+.schedule-period.afternoon { border-top: 1px solid var(--line); }
+.schedule-period-scroll { display: grid; align-content: start; gap: 6px; padding: 6px 4px; overflow-y: auto; overflow-x: hidden; scrollbar-gutter: stable; scrollbar-color: var(--schedule-neutral) var(--canvas); scroll-padding-block: 10px; }
+.schedule-period.morning > .schedule-period-scroll { height: calc(3 * var(--schedule-card-height) + 24px); }
+.schedule-period.afternoon > .schedule-period-scroll { height: calc(4 * var(--schedule-card-height) + 30px); }
+.schedule-period-scroll:focus-visible { outline: 2px solid var(--brand-700); outline-offset: -2px; }
+.interview-workspace-page .schedule-period-scroll .interview-event { scroll-margin-top: 10px; }
+.interview-workspace-page .interview-event { min-height: 68px; align-content: start; min-width: 0; padding: 4px; gap: 2px; line-height: 1.4; border: 1px solid color-mix(in srgb, var(--event-color) 38%, var(--surface)); border-left: 4px solid var(--event-color); background: color-mix(in srgb, var(--event-color) 5%, var(--surface)); font-size: 13px; opacity: 1; scroll-margin-top: 84px; }
+.interview-workspace-page .interview-event:hover { border-color: var(--event-color); background: color-mix(in srgb, var(--event-color) 10%, var(--surface)); }
+.interview-workspace-page .interview-event:focus-visible { outline: 2px solid var(--event-color); outline-offset: 2px; }
+.interview-workspace-page .interview-event time { color: var(--event-color); font-weight: 400; font-variant-numeric: tabular-nums; }
+.interview-workspace-page .interview-event small { color: var(--schedule-neutral); display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+.interview-workspace-page .interview-event.cancelled { color: var(--schedule-neutral); }
+.interview-workspace-page .interview-event.is-overdue { border-top-color: var(--schedule-overdue); border-right-color: var(--schedule-overdue); border-bottom-color: var(--schedule-overdue); }
+.interview-workspace-page .interview-event.is-overdue time { color: var(--schedule-overdue); }
+.schedule-status-badge { display: inline-block; margin-right: 4px; padding: 0 4px; border-radius: 3px; color: var(--surface); font-size: 12px; font-weight: 600; }
+.schedule-status-scheduled { background: var(--schedule-blue); }
+.schedule-status-completed { background: var(--schedule-green); }
+.schedule-status-cancelled { background: var(--schedule-neutral); }
+.schedule-status-badge.schedule-overdue-badge { background: var(--schedule-overdue); }
+.interview-workspace-page .interview-event b { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+.interview-workspace-page .interview-event b, .interview-workspace-page .interview-event small { overflow-wrap: anywhere; }
+.interview-workspace-page .schedule-rail { gap: 12px; }
+.interview-workspace-page .schedule-rail > section { border-color: var(--line); border-radius: 8px; }
+.interview-workspace-page .schedule-rail > section > header { height: 46px; border-bottom: 0; }
+.schedule-task-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); padding: 0 16px 12px; gap: 8px; }
+.schedule-task-grid > div { display: grid; justify-items: center; align-content: center; min-height: 66px; gap: 3px; border: 1px solid var(--line); border-radius: 6px; font-size: 13px; }
+.schedule-task-grid strong { font-size: 20px; font-variant-numeric: tabular-nums; }
+.schedule-task-grid .active { color: var(--brand-700); background: var(--brand-100); }
+.schedule-task-grid .overdue strong { color: var(--danger); }
+.interview-workspace-page .rail-task-list { display: grid; gap: 6px; padding: 0 16px 16px; }
+.interview-workspace-page .rail-task-list button { border: 1px solid var(--line); border-radius: 6px; }
+@media (max-width: 1100px) {
+  .interview-workspace-page .schedule-layout { grid-template-columns: minmax(0, 1fr); }
+  .interview-workspace-page .schedule-rail { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 767px) {
+  .interview-workspace-page .interview-filters { grid-template-columns: minmax(0, 1fr) 80px; }
+  .interview-filters > .schedule-primary-filters { grid-column: 1 / -1; grid-row: 2; }
+  .schedule-primary-filters { grid-template-columns: minmax(0, 1fr); }
+  .schedule-range-label { margin-left: 0; }
+  .interview-workspace-page .interview-week-grid { grid-template-columns: minmax(0, 1fr); }
+  .interview-workspace-page .schedule-rail { grid-template-columns: minmax(0, 1fr); }
+  .schedule-toolbar-actions > .ant-btn { margin-left: 0; }
+  .interview-workspace-page .ant-btn { min-height: 44px; }
+}
+
+@media (max-width: 767px), (pointer: coarse) {
+  .interview-workspace-page .schedule-primary-filters .ant-select { min-height: 44px; }
+  .interview-workspace-page .schedule-primary-filters .ant-select-clear { top: 0; right: 0; display: grid; place-items: center; width: 44px; height: 44px; margin-top: 0; }
+}
+
+.schedule-job-filter > .ant-col:has(.ant-select-disabled) { display: none; }
+
+.interview-workspace-page .interview-week-grid .today > header,
+.interview-workspace-page .interview-week-grid .today .calendar-empty { color: var(--ink); }
+
+
+@media (min-width: 1101px) {
+  .app-shell:has(.interview-workspace-page) { display: flex; flex-direction: column; min-height: 100dvh; }
+  .app-main:has(> .interview-workspace-page) { display: flex; flex: 1; min-height: 0; padding-bottom: 24px; }
+  .interview-workspace-page { flex: 1; min-height: 0; grid-template-rows: auto minmax(0, 1fr); }
+  .interview-workspace-page .schedule-layout { align-items: stretch; min-height: 0; }
+  .interview-workspace-page .schedule-main,
+  .interview-workspace-page .schedule-rail { display: flex; flex-direction: column; align-items: stretch; min-height: 0; }
+  .interview-workspace-page .interview-calendar { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+  .interview-workspace-page .interview-calendar > .ant-card-body { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+  .interview-workspace-page .schedule-calendar-scroll { flex: none; }
+  .interview-workspace-page .schedule-rail { overflow-y: auto; }
+  .interview-workspace-page .schedule-rail > section { flex-shrink: 0; }
+  .interview-workspace-page .schedule-rail > section:last-child { flex: 1; }
+}
+
+.schedule-event-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 4px; min-width: 0; }
+.interview-workspace-page .interview-event .schedule-event-name { display: block; min-width: 0; margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; line-height: 20px; font-weight: 700; }
+.schedule-event-heading .schedule-status-badge { flex-shrink: 0; margin: 2px 0 0; }
+.interview-workspace-page .interview-event .schedule-event-round { color: var(--schedule-neutral); font-size: 12px; font-weight: 400; }
+
+.schedule-event-timing { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 4px; line-height: 14px; white-space: nowrap; color: var(--schedule-neutral); font-size: 12px; }
+
+@media (min-width: 768px) and (max-width: 1000px) {
+  .interview-workspace-page .interview-week-grid { grid-template-columns: minmax(0, 1fr); }
+}

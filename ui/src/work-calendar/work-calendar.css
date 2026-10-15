@@ -1,0 +1,37 @@
+/* 保留列宽测量，避免 Ant Design 隐藏测量行里的克隆控件进入键盘焦点。 */
+.work-calendar-page .ant-table-measure-row { visibility: hidden; }
+
+/* 浅色背景保留状态区别，正文采用已有深色 Token 满足小字号对比度。 */
+.ant-app .app-main .work-calendar-page .ant-tag:not(.ant-tag-disabled) { color: var(--ink); }
+
+/* 多区块维护页按内容自然滚动，分页不能吸底遮住尚未滚到的日期行。 */
+.app-main .work-calendar-page { height: auto; }
+.app-main .work-calendar-page .ant-card,
+.app-main .work-calendar-page .ant-card-body { height: auto; min-height: 0; }
+.app-main .work-calendar-page .data-page-controls { position: static; margin-top: 0; }
+/* 年度维护：标记工具与保存集中在日历上方。 */
+.calendar-year-summary { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 20px; margin-bottom: 16px; color: var(--muted); }
+.calendar-legend { display: inline-flex; align-items: center; gap: 6px; }
+.calendar-legend::before { content: ''; width: 9px; height: 9px; border-radius: 3px; background: var(--muted); }
+.calendar-legend-workday::before { background: var(--info, #168bd2); }
+.calendar-legend-holiday::before { background: var(--warning, #b66a12); }
+.calendar-edit-toolbar { position: sticky; top: 0; z-index: 4; display: grid; gap: 12px; padding: 16px; margin-bottom: 20px; background: var(--canvas); border: 1px solid var(--line); border-radius: 10px; }
+.calendar-paint-tools, .calendar-range-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.calendar-paint-tools > .ant-input { width: 240px; }
+.calendar-paint-tools .ant-btn[aria-pressed="true"] { border-color: var(--operator); box-shadow: inset 0 0 0 1px var(--operator); background: color-mix(in srgb, var(--operator) 8%, var(--surface)); }
+.calendar-range-tools label { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 12px; }
+.calendar-range-tools input { width: 145px; }
+.calendar-range-tools [role="status"] { margin-left: auto; color: var(--muted); font-size: 13px; }
+@media (max-width: 600px) {
+  .calendar-edit-toolbar { padding: 12px; }
+  .calendar-paint-tools > .ant-input { width: 100%; }
+  .calendar-range-tools [role="status"] { margin-left: 0; width: 100%; }
+}
+
+.calendar-instruction { display: flex; flex-wrap: wrap; gap: 8px 16px; margin: 0 0 12px; color: var(--muted); font-size: 13px; }
+.calendar-instruction strong { color: var(--ink); font-weight: 500; }
+/* 来源与原因与保存动作相邻，窄屏自然换行。 */
+.calendar-save-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-bottom: 16px; }
+.calendar-save-fields label { display: grid; gap: 6px; color: var(--muted); font-size: 13px; }
+.calendar-save-fields [role="alert"] { color: var(--danger); }
+@media (max-width: 600px) { .calendar-save-fields { grid-template-columns: minmax(0, 1fr); } }

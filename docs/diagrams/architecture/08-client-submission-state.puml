@@ -1,0 +1,52 @@
+@startuml
+!include ../theme.puml
+title 甲方推荐处理状态机（发送事实独立保留）
+
+[*] --> DRAFT
+state "草稿" as DRAFT
+state "已完成风险检查" as RISK
+state "已发送" as SENT
+state "甲方筛选" as SCREEN
+state "甲方面试" as INTERVIEW
+state "通过" as ACCEPTED
+state "拒绝" as REJECTED
+state "撤回" as WITHDRAWN
+state "过期/长期无反馈" as EXPIRED
+
+DRAFT --> RISK : 检查重复、公司黑名单、当前甲方限制
+RISK --> SENT : HR确认并发送指定简历版本
+SENT --> SCREEN : HR记录甲方已接收
+SCREEN --> INTERVIEW : 甲方安排面试
+SCREEN --> REJECTED : 甲方筛选拒绝
+SCREEN --> WITHDRAWN : HR填写原因撤回，当前甲方步骤WITHDRAWN
+INTERVIEW --> ACCEPTED : 甲方面试通过
+INTERVIEW --> REJECTED : 甲方面试拒绝
+INTERVIEW --> WITHDRAWN : HR填写原因撤回，当前甲方步骤WITHDRAWN
+SENT --> WITHDRAWN : 撤回推荐
+SENT --> EXPIRED : 超时无反馈
+ACCEPTED --> [*]
+REJECTED --> [*]
+WITHDRAWN --> [*]
+EXPIRED --> [*]
+
+note right of SENT
+进入本状态时写入 deliveryStatus=SENT 和 sentAt；
+后续筛选、面试和结论只改变 processStatus，
+不覆盖已发送事实。撤回后不可继续用于甲方步骤或PASS。
+筛选/面试后撤回必须填原因并原子结束当前甲方步骤；
+Application保持活动，由HR重新选路并提交人工决定。
+end note
+
+note right of RISK
+一般风险由HR本人确认；
+覆盖原因和“带风险推进”标记持续留痕，
+不引入领导审批链。
+end note
+
+note right of REJECTED
+普通拒绝只结束当前推荐；
+拒绝页仅当勾选“甲方明确禁推”，
+并填写原因/来源时才原子创建仅限该甲方、默认永久的限制；
+限制不改变候选人全局状态，也不阻断其他甲方。
+end note
+@enduml

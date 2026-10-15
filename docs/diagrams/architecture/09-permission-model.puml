@@ -1,0 +1,57 @@
+@startuml
+!include ../theme.puml
+title 共享收件、简历与流程权限模型
+left to right direction
+
+actor "招聘人员" as Recruiter
+actor "所属领导" as Leader
+actor "多个超级管理员\n内置admin或获授权账号" as Admin
+component "权限决策\n角色 + 数据域 + 组织范围\n对象所属 + 字段/动作 + 跟进锁" as Decision
+
+rectangle "数据域" {
+  component "团队共享收件域\n授权招聘人员协作" as Intake
+  component "共享简历域\n公司人才资产" as Library
+  component "招聘流程域\n所属人/部门/协作" as Workflow
+  component "管理视图\n组织树下属范围" as Oversight
+}
+
+database "MySQL 权限、所属人\n组织树与锁事实" as DB
+database "Elasticsearch\n共享检索 + 字段权限投影" as ES
+component "查看派生下载/导出\n联系/编辑/高风险动作" as Actions
+
+Recruiter --> Decision
+Leader --> Decision
+Admin --> Decision : 全部对象/字段/动作
+DB --> Decision
+ES --> Decision : 召回前预筛
+
+Decision --> Intake : 授权招聘人员可查看/处理
+Decision --> Library : 授权招聘人员可检索预览
+Decision --> Workflow : 本人/协作/部门范围
+Decision --> Oversight : 领导查看全部下属
+
+Library --> Actions
+Workflow --> Actions
+Actions --> DB : 下载/导出复用查看事实\n其他动作回查规则与有效锁
+
+note bottom of Intake
+未确认入库的邮箱和上传附件由招聘团队共享；
+来源、默认所属人、分配与实际处理分别审计。
+end note
+
+note bottom of Workflow
+所有活动对象必须有所属人；
+沟通、面评、推荐、私密备注不随简历库公开。
+end note
+
+note bottom of Actions
+共享可见即可下载/导出相同对象与字段；
+但不等于可重复联系、编辑或高风险覆盖。
+end note
+
+note top of Admin
+拥有全部系统与业务权限；
+SUPER_ADMIN可授予多个账号；
+仍执行状态、版本、完整性和审计约束。
+end note
+@enduml

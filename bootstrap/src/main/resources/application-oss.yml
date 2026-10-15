@@ -1,0 +1,14 @@
+# 阿里云 ECS 部署叠加配置：与 dev 或外置 prod Profile 一起启用。
+hr:
+  object-storage:
+    mode: oss
+    # 目标 OSS Bucket 属于部署环境，必须由启动环境提供，仓库不保存真实资源名。
+    oss:
+      endpoint: ${HR_OSS_ENDPOINT}
+      region: ${HR_OSS_REGION}
+      bucket: ${HR_OSS_BUCKET}
+      credential-mode: ecs-ram-role
+      # ECS 已绑定的实例 RAM 角色；SDK 自动获取并轮换 STS 临时凭证。
+      role-name: ${HR_OSS_ROLE_NAME}
+    # 仅迁移旧 MinIO 数据时显式开启并配置旧 endpoint、bucket 和凭据。
+    legacy-minio-fallback-enabled: ${HR_OSS_LEGACY_MINIO_FALLBACK:false}

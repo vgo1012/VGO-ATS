@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.ezaigc.hr</groupId>
+        <artifactId>hr-platform</artifactId>
+        <version>0.1.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>bootstrap</artifactId>
+    <name>HR API Runtime</name>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.ezaigc.hr</groupId>
+            <artifactId>common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.ezaigc.hr</groupId>
+            <artifactId>identity</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.ezaigc.hr</groupId>
+            <artifactId>talent</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.ezaigc.hr</groupId>
+            <artifactId>recruiting</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.ezaigc.hr</groupId>
+            <artifactId>intelligence</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.ezaigc.hr</groupId>
+            <artifactId>integration</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.ezaigc.hr</groupId>
+            <artifactId>reporting</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-session-jdbc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-spring-boot4-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-jsqlparser</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-flyway</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-mysql</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webmvc-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+            </resource>
+            <!-- IDE Make 与 Maven 都复制声明的资源，生成阶段不得直接写入 classes。 -->
+            <resource>
+                <directory>${project.build.directory}/generated-resources</directory>
+                <filtering>false</filtering>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <id>build-single-sql-bundle</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <mkdir dir="${project.build.directory}/generated-sql"/>
+                                <copy file="${maven.multiModuleProjectDirectory}/docs/sql/hr_ai_complete_schema.sql"
+                                        tofile="${project.build.directory}/generated-sql/hr-platform-schema.sql"
+                                        overwrite="true"/>
+                                <mkdir dir="${project.build.directory}/generated-resources/db/migration"/>
+                                <!-- V0001 保留已发布资源；这里只显式打包本次前向迁移，避免改写历史校验值。 -->
+                                <copy file="${maven.multiModuleProjectDirectory}/docs/sql/hr_ai_upgrade_20260912_01__owner_scope.sql"
+                                        tofile="${project.build.directory}/generated-resources/db/migration/V2026091201__owner_scope.sql"
+                                        overwrite="true"/>
+                                <copy file="${maven.multiModuleProjectDirectory}/docs/sql/hr_ai_upgrade_20260914_01__jd_headcount.sql"
+                                      tofile="${project.build.directory}/generated-resources/db/migration/V2026091401__jd_headcount.sql"
+                                      overwrite="true"/>
+                                <copy file="${maven.multiModuleProjectDirectory}/docs/sql/hr_ai_upgrade_20260914_02__jd_recruitment_cycle.sql"
+                                      tofile="${project.build.directory}/generated-resources/db/migration/V2026091402__jd_recruitment_cycle.sql"
+                                      overwrite="true"/>
+                                <copy file="${maven.multiModuleProjectDirectory}/docs/sql/hr_ai_upgrade_20260914_03__monthly_report.sql"
+                                      tofile="${project.build.directory}/generated-resources/db/migration/V2026091403__monthly_report.sql"
+                                        overwrite="true"/>
+                                <copy file="${maven.multiModuleProjectDirectory}/docs/sql/hr_ai_upgrade_20260914_04__monthly_report_delete.sql"
+                                      tofile="${project.build.directory}/generated-resources/db/migration/V2026091404__monthly_report_delete.sql"
+                                      overwrite="true"/>
+                                <copy file="${maven.multiModuleProjectDirectory}/docs/sql/hr_ai_upgrade_20260914_05__recruitment_activity_origin.sql"
+                                        tofile="${project.build.directory}/generated-resources/db/migration/V2026091405__recruitment_activity_origin.sql"
+                                        overwrite="true"/>
+                                <copy file="${maven.multiModuleProjectDirectory}/docs/sql/hr_ai_upgrade_20260914_06__application_client_restrictions.sql"
+                                        tofile="${project.build.directory}/generated-resources/db/migration/V2026091406__application_client_restrictions.sql"
+                                        overwrite="true"/>
+                                <copy file="${maven.multiModuleProjectDirectory}/docs/sql/hr_ai_upgrade_20260914_07__work_calendar.sql"
+                                      tofile="${project.build.directory}/generated-resources/db/migration/V2026091407__work_calendar.sql"
+                                      overwrite="true"/>
+                                <copy file="${maven.multiModuleProjectDirectory}/docs/sql/hr_ai_upgrade_20260914_08__resume_lifecycle.sql"
+                                      tofile="${project.build.directory}/generated-resources/db/migration/V2026091408__resume_lifecycle.sql"
+                                      overwrite="true"/>
+                                <copy file="${maven.multiModuleProjectDirectory}/docs/sql/hr_ai_upgrade_20260915_01__work_calendar_holiday.sql"
+                                      tofile="${project.build.directory}/generated-resources/db/migration/V2026091501__work_calendar_holiday.sql"
+                                      overwrite="true"/>
+                                <copy file="${maven.multiModuleProjectDirectory}/docs/sql/hr_ai_upgrade_20260915_02__interview_labels.sql"
+                                      tofile="${project.build.directory}/generated-resources/db/migration/V2026091502__interview_labels.sql"
+                                      overwrite="true"/>
+                                <copy file="${maven.multiModuleProjectDirectory}/docs/sql/hr_ai_upgrade_20260916_01__wecom_directory.sql"
+                                      tofile="${project.build.directory}/generated-resources/db/migration/V2026091601__wecom_directory.sql"
+                                      overwrite="true"/>
+                                <copy file="${maven.multiModuleProjectDirectory}/docs/sql/hr_ai_upgrade_20260917_01__wecom_directory_version.sql"
+                                      tofile="${project.build.directory}/generated-resources/db/migration/V2026091701__wecom_directory_version.sql"
+                                      overwrite="true"/>
+                                <copy file="${maven.multiModuleProjectDirectory}/docs/sql/hr_ai_upgrade_20260917_02__wecom_account_link.sql"
+                                      tofile="${project.build.directory}/generated-resources/db/migration/V2026091702__wecom_account_link.sql"
+                                      overwrite="true"/>
+                                <copy file="${maven.multiModuleProjectDirectory}/docs/sql/hr_ai_upgrade_20260917_03__jd_active_identity.sql"
+                                      tofile="${project.build.directory}/generated-resources/db/migration/V2026091703__jd_active_identity.sql"
+                                      overwrite="true"/>
+                                <copy file="${maven.multiModuleProjectDirectory}/docs/sql/hr_ai_upgrade_20260917_04__wecom_interview_calendar.sql"
+                                      tofile="${project.build.directory}/generated-resources/db/migration/V2026091704__wecom_interview_calendar.sql"
+                                      overwrite="true"/>
+                                <copy file="${maven.multiModuleProjectDirectory}/docs/sql/hr_ai_upgrade_20260917_05__jd_short_code_sequence.sql"
+                                      tofile="${project.build.directory}/generated-resources/db/migration/V2026091705__jd_short_code_sequence.sql"
+                                      overwrite="true"/>
+                                <copy file="${maven.multiModuleProjectDirectory}/docs/sql/hr_ai_upgrade_20260917_06__jd_dimension_code.sql"
+                                      tofile="${project.build.directory}/generated-resources/db/migration/V2026091706__jd_dimension_code.sql"
+                                      overwrite="true"/>
+                                <copy file="${maven.multiModuleProjectDirectory}/docs/sql/hr_ai_upgrade_20260918_01__jd_independent_grouping.sql"
+                                      tofile="${project.build.directory}/generated-resources/db/migration/V2026091801__jd_independent_grouping.sql"
+                                      overwrite="true"/>
+                                <copy file="${maven.multiModuleProjectDirectory}/docs/sql/hr_ai_upgrade_20260918_02__mail_resume_intake.sql"
+                                      tofile="${project.build.directory}/generated-resources/db/migration/V2026091802__mail_resume_intake.sql"
+                                      overwrite="true"/>
+                                <copy file="${maven.multiModuleProjectDirectory}/docs/sql/hr_ai_upgrade_20260918_03__resume_intake_outbox.sql"
+                                      tofile="${project.build.directory}/generated-resources/db/migration/V2026091803__resume_intake_outbox.sql"
+                                      overwrite="true"/>
+                                <copy file="${maven.multiModuleProjectDirectory}/docs/sql/hr_ai_upgrade_20260919_01__jd_version_work_region.sql"
+                                      tofile="${project.build.directory}/generated-resources/db/migration/V2026091901__jd_version_work_region.sql"
+                                      overwrite="true"/>
+                                <copy file="${maven.multiModuleProjectDirectory}/docs/sql/hr_ai_upgrade_20260920_01__ai_professional_assessment.sql"
+                                      tofile="${project.build.directory}/generated-resources/db/migration/V2026092001__ai_professional_assessment.sql"
+                                      overwrite="true"/>
+                                <copy file="${maven.multiModuleProjectDirectory}/docs/sql/hr_ai_upgrade_20260921_01__remove_detailed_evidence.sql"
+                                      tofile="${project.build.directory}/generated-resources/db/migration/V2026092101__remove_detailed_evidence.sql"
+                                      overwrite="true"/>
+                                <copy file="${maven.multiModuleProjectDirectory}/docs/sql/hr_ai_upgrade_20260921_02__remove_legacy_resume_evidence_json.sql"
+                                      tofile="${project.build.directory}/generated-resources/db/migration/V2026092102__remove_legacy_resume_evidence_json.sql"
+                                      overwrite="true"/>
+                                <copy file="${maven.multiModuleProjectDirectory}/docs/sql/hr_ai_upgrade_20260921_03__remove_legacy_jd_evidence_json.sql"
+                                      tofile="${project.build.directory}/generated-resources/db/migration/V2026092103__remove_legacy_jd_evidence_json.sql"
+                                      overwrite="true"/>
+                                <copy file="${maven.multiModuleProjectDirectory}/docs/sql/hr_ai_upgrade_20260922_01__shared_resume_reclaim_rescore.sql"
+                                      tofile="${project.build.directory}/generated-resources/db/migration/V2026092201__shared_resume_reclaim_rescore.sql"
+                                      overwrite="true"/>
+                                <copy file="${maven.multiModuleProjectDirectory}/docs/sql/hr_ai_upgrade_20260922_02__onboarding_process.sql"
+                                      tofile="${project.build.directory}/generated-resources/db/migration/V2026092202__onboarding_process.sql"
+                                      overwrite="true"/>
+                                <copy file="${maven.multiModuleProjectDirectory}/docs/sql/hr_ai_upgrade_20260923_01__jd_department_code.sql"
+                                      tofile="${project.build.directory}/generated-resources/db/migration/V2026092301__jd_department_code.sql"
+                                      overwrite="true"/>
+                                <copy file="${maven.multiModuleProjectDirectory}/docs/sql/hr_ai_upgrade_20260923_02__jd_title_suggestions.sql"
+                                      tofile="${project.build.directory}/generated-resources/db/migration/V2026092302__jd_title_suggestions.sql"
+                                      overwrite="true"/>
+                                <copy file="${maven.multiModuleProjectDirectory}/docs/sql/hr_ai_upgrade_20260924_01__department_jd_sources.sql"
+                                      tofile="${project.build.directory}/generated-resources/db/migration/V2026092401__department_jd_sources.sql"
+                                      overwrite="true"/>
+                                <copy file="${maven.multiModuleProjectDirectory}/docs/sql/hr_ai_upgrade_20260928_01__login_protection.sql"
+                                      tofile="${project.build.directory}/generated-resources/db/migration/V2026092801__login_protection.sql"
+                                      overwrite="true"/>
+                                <copy file="${maven.multiModuleProjectDirectory}/docs/sql/hr_ai_upgrade_20260930_01__scoped_intake_reparse.sql"
+                                      tofile="${project.build.directory}/generated-resources/db/migration/V2026093001__scoped_intake_reparse.sql"
+                                      overwrite="true"/>
+                                <copy file="${maven.multiModuleProjectDirectory}/docs/sql/hr_ai_upgrade_20261008_01__wecom_create_recovery.sql"
+                                      tofile="${project.build.directory}/generated-resources/db/migration/V2026100801__wecom_create_recovery.sql"
+                                      overwrite="true"/>
+                                <copy file="${maven.multiModuleProjectDirectory}/docs/sql/hr_ai_upgrade_20261008_02__candidate_merge_history_indexes.sql"
+                                      tofile="${project.build.directory}/generated-resources/db/migration/V2026100802__candidate_merge_history_indexes.sql"
+                                      overwrite="true"/>
+                                <copy file="${maven.multiModuleProjectDirectory}/docs/sql/hr_ai_upgrade_20261008_03__search_index_retention.sql"
+                                      tofile="${project.build.directory}/generated-resources/db/migration/V2026100803__search_index_retention.sql"
+                                      overwrite="true"/>
+                                <copy file="${maven.multiModuleProjectDirectory}/docs/sql/hr_ai_upgrade_20261010_01__public_jd_content.sql"
+                                      tofile="${project.build.directory}/generated-resources/db/migration/V2026101001__public_jd_content.sql"
+                                      overwrite="true"/>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>

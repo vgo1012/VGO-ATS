@@ -1,0 +1,7 @@
+.matching-score-table .match-summary-trigger.ant-btn { width: 100%; height: auto; min-height: 32px; padding: 0; text-align: left; white-space: normal; color: var(--muted); }
+.matching-score-table .match-summary-trigger .match-summary-preview { display: -webkit-box; width: 100%; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 2; font-size: 12px; line-height: 1.65; overflow-wrap: anywhere; }
+.match-summary-panel { color: var(--ink); width: min(420px, calc(100vw - 56px)); }
+.match-summary-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.match-summary-panel p { max-height: min(320px, 50dvh); margin: 8px 0 0; overflow-y: auto; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 12px; line-height: 1.7; }
+.match-summary-panel p:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+@media (max-width: 767px) { .match-summary-heading .ant-btn { min-height: 44px; } }

@@ -1,0 +1,10 @@
+.candidate-skills-preview { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 8px; min-width: 0; }
+.candidate-skills-preview > span { max-width: 100%; overflow-wrap: anywhere; line-height: 1.6; }
+.candidate-skills-preview > .ant-btn { flex-shrink: 0; }
+.candidate-skills-panel { width: min(360px, calc(100vw - 56px)); }
+.candidate-skills-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+.candidate-skills-heading strong { color: var(--ink); font-size: 14px; }
+.candidate-skills-list { display: flex; flex-wrap: wrap; align-content: flex-start; gap: 6px; max-height: min(280px, 50dvh); overflow-y: auto; }
+.candidate-skills-list .ant-tag { max-width: 100%; margin: 0; padding: 3px 8px; background: var(--canvas); border-color: var(--line); color: var(--ink); white-space: normal; overflow-wrap: anywhere; font-size: 12px; line-height: 1.6; }
+.candidate-skills-list:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+@media (max-width: 767px) { .candidate-skills-heading .ant-btn { min-height: 44px; } }

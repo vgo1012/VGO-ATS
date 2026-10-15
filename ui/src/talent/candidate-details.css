@@ -1,0 +1,23 @@
+.candidate-detail-compact .candidate-summary-grid { display: grid; grid-template-columns: minmax(0, 1fr) 200px; gap: 24px; }
+.candidate-summary-grid > * { min-width: 0; }
+.candidate-detail-compact .candidate-detail-summary .application-materials h2 { display: none; }
+.candidate-summary-grid .ant-descriptions-item-content { overflow-wrap: anywhere; }
+.candidate-summary-grid .candidate-blacklist-details .ant-card-head { min-height: 0; }
+.candidate-summary-grid .candidate-blacklist-details .ant-card-head-title { padding: 0 0 6px; font-size: 14px; }
+.candidate-summary-grid .candidate-blacklist-details .ant-card-body { padding: 0; color: var(--muted); }
+.candidate-detail-compact .candidate-detail-analysis { border-top: 1px solid var(--line); }
+.candidate-detail-compact .resume-review-panel > .ant-card-body > p { margin: 0 0 10px; }
+@media (max-width: 767px) {
+  .candidate-detail-compact .candidate-summary-grid { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+}
+.workspace-dialog .candidate-detail-compact .candidate-detail-summary > .ant-card-head .ant-card-head-wrapper { justify-content: flex-start; gap: 8px 16px; }
+.workspace-dialog .candidate-detail-compact .candidate-detail-summary > .ant-card-head .ant-card-head-title { flex: none; }
+.workspace-dialog .candidate-detail-compact .candidate-detail-summary > .ant-card-head .ant-card-extra { margin-inline-start: 0; }
+.workspace-dialog .candidate-detail-compact .candidate-detail-summary > .ant-card-body { padding: 8px 0 0; }
+.workspace-dialog .candidate-detail-compact .candidate-detail-analysis { padding-top: 12px; }
+.workspace-dialog .candidate-detail-compact .candidate-detail-analysis > .ant-card-body { padding: 4px 0 0; }
+.workspace-dialog .candidate-detail-compact .resume-review-panel > .ant-card-head { min-height: 32px; }
+.workspace-dialog .candidate-detail-compact .resume-review-panel > .ant-card-body { padding: 4px 0 8px; }
+@media (min-width: 768px) {
+  .candidate-detail-compact :is(.candidate-detail-summary, .candidate-detail-analysis) > .ant-card-head .ant-btn { height: 32px; min-height: 32px; }
+}

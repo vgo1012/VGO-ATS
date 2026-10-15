@@ -1,4 +1,8 @@
 <p align="center">
+  <a href="README.en.md">English</a> · <strong>简体中文</strong>
+</p>
+
+<p align="center">
   <img src="ui/public/assets/vgo-mark.svg" width="72" alt="VGO 标识">
 </p>
 
